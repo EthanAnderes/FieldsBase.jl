@@ -7,7 +7,7 @@
 =#
 
 using FieldsBase
-import FieldsBase: has_qu, is_map, is_lense_basis, fourier_transform
+import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # QUmap
 struct QUmap{Px<:Flat,Tx<:Real} <: Field{Px,S2}
@@ -51,6 +51,6 @@ is_map(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
 
 
 const S2Field{Px,Tx} = Union{EBfourier{Px,Tx}, EBmap{Px,Tx}, QUfourier{Px,Tx}, QUmap{Px,Tx}}
-function fourier_transform(::Type{F}) where F<:S2Field{Px,Tx} where {Px<:Flat, Tx<:Real}
-    return r𝔽{Px,Tx}
+function harmonic_transform(::Type{F}) where F<:S2Field{Px,Tx} where {Px<:Flat, Tx<:Real}
+    return r𝔽(Px,Tx)
 end

@@ -1,6 +1,7 @@
 # Some transform operators the user can choose from
 
-fourier_transform(::Type{Any}) = error("define fourier_transform")
+#NOTE all Flat transforms must have x, k, Δx, Δk, Ωk and Ωpix as fields
+
 
 ############################################
 #  real FFT
@@ -21,49 +22,21 @@ struct r𝔽{P<:Flat,T<:Real,F}
     FFT::F
 end
 
-# I want generated version of these....
-# NOTE: these need to be defined for each fourier transform ...
-function ebk_to_quk(ek, bk, ::Type{r𝔽{P,T}}) where {P<:Pix, T<:Real}
-    g  = r𝔽(P,T)
-    # ---------------
-    @inbounds qk = .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
-    @inbounds uk = .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
+function ebk_to_quk(ek, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+    rw, cl = size(ek)
+    qk = Array{Complex{T},2}(rw,cl)
+    uk = Array{Complex{T},2}(rw,cl)
+    @inbounds qk .= .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
+    @inbounds uk .= .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
     return qk, uk
-    # -------------------
-    # rw, cl = size(ek)
-    # qk = Array{Complex{T},2}(rw,cl)
-    # uk = Array{Complex{T},2}(rw,cl)
-    # @inbounds for j = 1:cl
-    #     @simd for i = 1:rw
-    #         ϕk = atan2(g.k[2][i],g.k[1][j])
-    #         cos2ϕk = cos(2ϕk)
-    #         sin2ϕk = sin(2ϕk)
-    #         qk[i,j] = - ek[i,j] * cos2ϕk + bk[i,j] * sin2ϕk
-    #         uk[i,j] = - ek[i,j] * sin2ϕk - bk[i,j] * cos2ϕk
-    #     end
-    # end
-    # return qk, uk
 end
-function quk_to_ebk(qk, uk, ::Type{r𝔽{P,T}}) where {P<:Pix, T<:Real}
-    g  = r𝔽(P,T)
-    # ----------------
-    @inbounds ek = .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
-    @inbounds bk =    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
+function quk_to_ebk(qk, uk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+    rw, cl = size(qk)
+    ek = Array{Complex{T},2}(rw,cl)
+    bk = Array{Complex{T},2}(rw,cl)
+    @inbounds ek .= .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
+    @inbounds bk .=    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
     return ek, bk
-    # ----------------
-    # rw, cl = size(qk)
-    # ek = Array{Complex{T},2}(rw,cl)
-    # bk = Array{Complex{T},2}(rw,cl)
-    # @inbounds for j = 1:cl
-    #     @simd for i = 1:rw
-    #         ϕk = atan2(g.k[2][i],g.k[1][j])
-    #         cos2ϕk = cos(2ϕk)
-    #         sin2ϕk = sin(2ϕk)
-    #         ek[i,j] = - qk[i,j] * cos2ϕk - uk[i,j] * sin2ϕk
-    #         bk[i,j] =   qk[i,j] * sin2ϕk - uk[i,j] * cos2ϕk
-    #     end
-    # end
-    # return ek, bk
 end
 
 
@@ -120,14 +93,12 @@ struct 𝔽{P<:Flat,T<:Real,F}
 end
 
 
-function ebk_to_quk(ek, bk, ::Type{𝔽{P,T}}) where {P<:Pix, T<:Real}
-    g  = r𝔽(P,T)
+function ebk_to_quk(ek, bk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
     qk = .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
     uk = .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
     return qk, uk
 end
-function quk_to_ebk(qk, uk, ::Type{𝔽{P,T}}) where {P<:Pix, T<:Real}
-    g  = r𝔽(P,T)
+function quk_to_ebk(qk, uk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
     ek = .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
     bk =    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
     return ek, bk
@@ -161,31 +132,3 @@ end
 
 (*)(g::𝔽{P,T}, x) where P<:Pix where T = g.FFT * x
 (\)(g::𝔽{P,T}, x) where P<:Pix where T = g.FFT \ x
-
-
-
-############################################
-#  Healpix transform
-#############################################
-
- struct ℍ{P<:Healpix,T<:Real}
-    Ωpix::T
-    lmax::T
-    l::Matrix{T}
-    m::Matrix{T}
-    φ::Matrix{T}  # azmuth
-    Θ::Matrix{T}  # polar
-end
-
-# function ebk_to_quk(ek, bk, ::Type{ℍ{P,T}}) where {P<:Pix, T<:Real}
-#     g  = r𝔽(P,T)
-#     qk = .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
-#     uk = .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
-#     return qk, uk
-# end
-# function quk_to_ebk(qk, uk, ::Type{ℍ{P,T}}) where {P<:Pix, T<:Real}
-#     g  = r𝔽(P,T)
-#     ek = .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
-#     bk =    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
-#     return ek, bk
-# end

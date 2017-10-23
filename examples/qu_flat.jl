@@ -8,7 +8,7 @@ BLAS.set_num_threads(6)
 #  load user defined Field types
 ############################################################
 using FieldsBase
-import FieldsBase: has_qu, is_map, is_lense_basis, fourier_transform
+import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 
 # QUmap
@@ -54,7 +54,9 @@ is_map(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
 
 #NOTE: Need to choose a fourier or spherical harmonic transform
 const MyField{Px,Tx} = Union{EBfourier{Px,Tx}, EBmap{Px,Tx}, QUfourier{Px,Tx}, QUmap{Px,Tx}}
-fourier_transform(::Type{F}) where F<:MyField{Px,Tx} where {Px<:Flat, Tx<:Real} = r𝔽{Px,Tx}
+function harmonic_transform(::Type{F}) where F<:MyField{Px,Tx} where {Px<:Flat, Tx<:Real}
+    return r𝔽(Px,Tx)
+end
 
 
 

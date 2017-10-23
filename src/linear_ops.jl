@@ -11,12 +11,11 @@ end
 
 const 𝕃 = DiagOp
 
-*(O::ℒ{F}, f::Field) where {F} = O.f * F(f)
+*(O::𝕃{F}, f::Field) where {F<:Field} = O.f * F(f)
 
+# define 𝕃^a
+(^)(op::𝕃{F}, a::Number)  where F<:Field = 𝕃(F((i.^a for i in data(op.f))...))
+(^)(op::𝕃{F}, a::Integer) where F<:Field = 𝕃(F((i.^a for i in data(op.f))...))
 
-# # define ℒ^a
-# (^)(op::ℒ{F}, a::Number)  where F<:Field = ℒ(F((i.^a for i in data(op.f))...))
-# (^)(op::ℒ{F}, a::Integer) where F<:Field = ℒ(F((i.^a for i in data(op.f))...))
-#
-# # inv(ℒ), includes a pre-squash
-# inv(op::ℒ{F}) where {F<:Field} = ℒ(F((squash.(1 ./ i) for i in data(op.f))...))
+# inv(𝕃), includes a pre-squash
+inv(op::𝕃{F}) where {F<:Field} = 𝕃(F((squash.(1 ./ i) for i in data(op.f))...))
