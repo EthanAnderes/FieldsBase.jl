@@ -45,8 +45,9 @@ end
 
 
 ############################################################
-#  The types code is ready to go ...
+#  The fields are ready to go ...
 ############################################################
+
 
 using Base.Test
 # using Test # for v0.7

@@ -55,8 +55,6 @@ end
 has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
-
-
 ############################################################
 #  Specify the harmonic transform
 ############################################################

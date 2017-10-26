@@ -67,21 +67,15 @@ end
 
 
 ############################################################
-#  The types code is ready to go ...
+#  The fields are ready to go ...
 ############################################################
 
 nside  = 512
 Θpix   = 2.0
 P     = Flat{Θpix,nside}
-#T     = Float64
 T     = Float32
-#odes   = Lense.default_ode_steps  # number of ODE steps
 g      =  r𝔽(P,T);
-#kmag   = sqrt.(g.k[1].^2 .+ g.k[2].^2)
-#Δ⁻¹    = I𝔽(-squash.(1./kmag.^2), P, T)
-#Δ      = I𝔽(-kmag.^2, P, T)
 
-# Test ....
 qx, ux = rand(T, nside, nside), rand(T, nside, nside)
 ex, bx = rand(T, nside, nside), rand(T, nside, nside)
 qk, uk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
@@ -95,11 +89,8 @@ p4 = EBfourier{P,T}(ek, bk)
 p = convert(QUfourier{P,T}, p1)
 p.qk - g * p1.qx
 
-# using BenchmarkTools
-# @benchmark convert(QUfourier{P,T}, $p4)
-# @benchmark  convert(QUfourier{P,T}, $p1)
-@time convert(QUfourier{P,T}, p4) # 0.0021
-@time  convert(QUfourier{P,T}, p1) # 0.000805 seconds
+@time convert(QUfourier{P,T}, p4)
+@time convert(QUfourier{P,T}, p1) 
 
 
 

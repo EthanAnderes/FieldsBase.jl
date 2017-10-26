@@ -14,7 +14,6 @@
 using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
-
 # TQUmap
 struct TQUmap{P<:Flat,T<:Real} <: Field{P,S02}
     tx::Matrix{T}
@@ -38,7 +37,6 @@ has_qu(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
-
 # TEBmap
 struct TEBmap{P<:Pix, T<:Real} <: Field{P,S02}
     tx::Matrix{Complex{T}}
@@ -48,7 +46,6 @@ struct TEBmap{P<:Pix, T<:Real} <: Field{P,S02}
 end
 has_qu(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
-
 
 
 # TEBfourier

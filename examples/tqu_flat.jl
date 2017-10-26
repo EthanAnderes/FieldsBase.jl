@@ -47,16 +47,14 @@ function harmonic_transform(::Type{F}) where F<:S02Field{P,T} where {P<:Flat, T<
 end
 
 
-
-
 ############################################################
-#  The types code is ready to go ...
+#  The fields are ready to go ...
 ############################################################
+
 
 nside  = 512
 Θpix   = 2.0
 P     = Flat{Θpix,nside}
-#T     = Float64
 T     = Float32
 g     =  r𝔽(P,T);
 

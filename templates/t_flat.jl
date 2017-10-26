@@ -33,8 +33,6 @@ has_qu(::Type{Tfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Tfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
-
-
 ############################################################
 #  Specify the harmonic transform
 ############################################################

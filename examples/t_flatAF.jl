@@ -98,8 +98,10 @@ import Base: *, \, +, -, ^, dot
 (^)(op::𝕃{F}, a::Number)  where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
 (^)(op::𝕃{F}, a::Integer) where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
 
+
+
 ############################################################
-#  Now try it out ...
+#  The fields are ready to go ...
 ############################################################
 
 
@@ -117,7 +119,6 @@ c = AFArray(rand(Complex{Tx}, nside÷2+1,nside))
 r = rand(AFArray{Tx}, nside, nside)
 g * r
 g \ c
-###
 
 
 tx = AFArray(rand(Tx, nside, nside))
