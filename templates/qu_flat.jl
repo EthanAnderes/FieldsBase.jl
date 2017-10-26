@@ -1,56 +1,67 @@
 #=
-	To load from another package use:
+	To load use
 
 	```
 	include(joinpath(Pkg.dir("FieldsBase"), "templates", "qu_flat.jl"))
 	```
 =#
 
+
+############################################################
+#  Define the field types and their trait properties
+############################################################
+
+
 using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # QUmap
-struct QUmap{Px<:Flat,Tx<:Real} <: Field{Px,S2}
-    qx::Matrix{Tx}
-    ux::Matrix{Tx}
-    QUmap{Px,Tx}(qx::Matrix, ux::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(qx, ux)
+struct QUmap{P<:Flat,T<:Real} <: Field{P,S2}
+    qx::Matrix{T}
+    ux::Matrix{T}
+    QUmap{P,T}(qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(qx, ux)
 end
-has_qu(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{true}
-is_map(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{true}
-is_lense_basis(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsLenseBasis{true}
+has_qu(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
+is_map(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
+is_lense_basis(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # QUfourier
-struct QUfourier{Px<:Pix,Tx<:Real} <: Field{Px,S2}
-    qk::Matrix{Complex{Tx}}
-    uk::Matrix{Complex{Tx}}
-    QUfourier{Px,Tx}(qk::Matrix, uk::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(complex.(qk), complex.(uk))
+struct QUfourier{P<:Pix,T<:Real} <: Field{P,S2}
+    qk::Matrix{Complex{T}}
+    uk::Matrix{Complex{T}}
+    QUfourier{P,T}(qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(qk), complex.(uk))
 end
-has_qu(::Type{QUfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{true}
-is_map(::Type{QUfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
+has_qu(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
+is_map(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
 # EBmap
-struct EBmap{Px<:Pix, Tx<:Real} <: Field{Px,S2}
-    ex::Matrix{Tx}
-    bx::Matrix{Tx}
-    EBmap{Px,Tx}(ex::Matrix, bx::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(ex, bx)
+struct EBmap{P<:Pix, T<:Real} <: Field{P,S2}
+    ex::Matrix{T}
+    bx::Matrix{T}
+    EBmap{P,T}(ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(ex, bx)
 end
-has_qu(::Type{EBmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{false}
-is_map(::Type{EBmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{true}
+has_qu(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
+is_map(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
 # EBfourier
-struct EBfourier{Px<:Pix, Tx<:Real} <: Field{Px,S2}
-    ek::Matrix{Complex{Tx}}
-    bk::Matrix{Complex{Tx}}
-    EBfourier{Px,Tx}(ek::Matrix, bk::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(complex.(ek), complex.(bk))
+struct EBfourier{P<:Pix, T<:Real} <: Field{P,S2}
+    ek::Matrix{Complex{T}}
+    bk::Matrix{Complex{T}}
+    EBfourier{P,T}(ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(ek), complex.(bk))
 end
-has_qu(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real}  = HasQU{false}
-is_map(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
+has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
+is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
-const S2Field{Px,Tx} = Union{EBfourier{Px,Tx}, EBmap{Px,Tx}, QUfourier{Px,Tx}, QUmap{Px,Tx}}
-function harmonic_transform(::Type{F}) where F<:S2Field{Px,Tx} where {Px<:Flat, Tx<:Real}
-    return r𝔽(Px,Tx)
+
+############################################################
+#  Specify the harmonic transform
+############################################################
+
+const S2Field{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
+function harmonic_transform(::Type{F}) where F<:S2Field{P,T} where {P<:Flat, T<:Real}
+    return r𝔽(P,T)
 end

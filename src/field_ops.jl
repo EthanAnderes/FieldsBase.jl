@@ -13,6 +13,8 @@
 (*)(f::T, n::Number) where T<:Field = T((n .* data(f))...)
 (*)(n::Number, f::T) where T<:Field = T((n .* data(f))...)
 
+
+
 ##### op(fields, fields)
 
 # operators which broadcast to the underlying data

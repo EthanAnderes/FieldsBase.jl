@@ -4,112 +4,117 @@ if VERSION >= v"0.7.0-DEV.1"
 end
 FFTW.set_num_threads(6)
 BLAS.set_num_threads(6)
+
 ############################################################
-#  load user defined Field types
+#  Define the field types and their trait properties
 ############################################################
+
 using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 
 # QUmap
-struct QUmap{Px<:Flat,Tx<:Real} <: Field{Px,S2}
-    qx::Matrix{Tx}
-    ux::Matrix{Tx}
-    QUmap{Px,Tx}(qx::Matrix, ux::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(qx, ux)
+struct QUmap{P<:Flat,T<:Real} <: Field{P,S2}
+    qx::Matrix{T}
+    ux::Matrix{T}
+    QUmap{P,T}(qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(qx, ux)
 end
-has_qu(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{true}
-is_map(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{true}
-is_lense_basis(::Type{QUmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsLenseBasis{true}
+has_qu(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
+is_map(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
+is_lense_basis(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # QUfourier
-struct QUfourier{Px<:Pix,Tx<:Real} <: Field{Px,S2}
-    qk::Matrix{Complex{Tx}}
-    uk::Matrix{Complex{Tx}}
-    QUfourier{Px,Tx}(qk::Matrix, uk::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(complex.(qk), complex.(uk))
+struct QUfourier{P<:Pix,T<:Real} <: Field{P,S2}
+    qk::Matrix{Complex{T}}
+    uk::Matrix{Complex{T}}
+    QUfourier{P,T}(qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(qk), complex.(uk))
 end
-has_qu(::Type{QUfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{true}
-is_map(::Type{QUfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
+has_qu(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
+is_map(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
 # EBmap
-struct EBmap{Px<:Pix, Tx<:Real} <: Field{Px,S2}
-    ex::Matrix{Tx}
-    bx::Matrix{Tx}
-    EBmap{Px,Tx}(ex::Matrix, bx::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(ex, bx)
+struct EBmap{P<:Pix, T<:Real} <: Field{P,S2}
+    ex::Matrix{T}
+    bx::Matrix{T}
+    EBmap{P,T}(ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(ex, bx)
 end
-has_qu(::Type{EBmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{false}
-is_map(::Type{EBmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{true}
+has_qu(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
+is_map(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
 # EBfourier
-struct EBfourier{Px<:Pix, Tx<:Real} <: Field{Px,S2}
-    ek::Matrix{Complex{Tx}}
-    bk::Matrix{Complex{Tx}}
-    EBfourier{Px,Tx}(ek::Matrix, bk::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(complex.(ek), complex.(bk))
+struct EBfourier{P<:Pix, T<:Real} <: Field{P,S2}
+    ek::Matrix{Complex{T}}
+    bk::Matrix{Complex{T}}
+    EBfourier{P,T}(ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(ek), complex.(bk))
 end
-has_qu(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real}  = HasQU{false}
-is_map(::Type{EBfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
+has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
+is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
-#NOTE: Need to choose a fourier or spherical harmonic transform
-const MyField{Px,Tx} = Union{EBfourier{Px,Tx}, EBmap{Px,Tx}, QUfourier{Px,Tx}, QUmap{Px,Tx}}
-function harmonic_transform(::Type{F}) where F<:MyField{Px,Tx} where {Px<:Flat, Tx<:Real}
-    return r𝔽(Px,Tx)
+############################################################
+#  Specify the harmonic transform
+############################################################
+
+const MyField{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
+function harmonic_transform(::Type{F}) where F<:MyField{P,T} where {P<:Flat, T<:Real}
+    return r𝔽(P,T)
 end
 
 
 
 
 ############################################################
-#  set grid geometry, etc.
+#  The types code is ready to go ...
 ############################################################
 
 nside  = 512
 Θpix   = 2.0
-Px     = Flat{Θpix,nside}
-#Tx     = Float64
-Tx     = Float32
+P     = Flat{Θpix,nside}
+#T     = Float64
+T     = Float32
 #odes   = Lense.default_ode_steps  # number of ODE steps
-g      =  r𝔽(Px,Tx);
+g      =  r𝔽(P,T);
 #kmag   = sqrt.(g.k[1].^2 .+ g.k[2].^2)
-#Δ⁻¹    = I𝔽(-squash.(1./kmag.^2), Px, Tx)
-#Δ      = I𝔽(-kmag.^2, Px, Tx)
+#Δ⁻¹    = I𝔽(-squash.(1./kmag.^2), P, T)
+#Δ      = I𝔽(-kmag.^2, P, T)
 
 # Test ....
-qx, ux = rand(Tx, nside, nside), rand(Tx, nside, nside)
-ex, bx = rand(Tx, nside, nside), rand(Tx, nside, nside)
-qk, uk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
-ek, bk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
+qx, ux = rand(T, nside, nside), rand(T, nside, nside)
+ex, bx = rand(T, nside, nside), rand(T, nside, nside)
+qk, uk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
+ek, bk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
 
-p1 = QUmap{Px,Tx}(qx, ux)
-p2 = EBmap{Px,Tx}(ex, bx)
-p3 = QUfourier{Px,Tx}(qk, uk)
-p4 = EBfourier{Px,Tx}(ek, bk)
+p1 = QUmap{P,T}(qx, ux)
+p2 = EBmap{P,T}(ex, bx)
+p3 = QUfourier{P,T}(qk, uk)
+p4 = EBfourier{P,T}(ek, bk)
 
-p = convert(QUfourier{Px,Tx}, p1)
+p = convert(QUfourier{P,T}, p1)
 p.qk - g * p1.qx
 
 # using BenchmarkTools
-# @benchmark convert(QUfourier{Px,Tx}, $p4)
-# @benchmark  convert(QUfourier{Px,Tx}, $p1)
-@time convert(QUfourier{Px,Tx}, p4) # 0.0021
-@time  convert(QUfourier{Px,Tx}, p1) # 0.000805 seconds
+# @benchmark convert(QUfourier{P,T}, $p4)
+# @benchmark  convert(QUfourier{P,T}, $p1)
+@time convert(QUfourier{P,T}, p4) # 0.0021
+@time  convert(QUfourier{P,T}, p1) # 0.000805 seconds
 
 
 
-p = convert(EBfourier{Px,Tx}, p1)
-p = convert(EBfourier{Px,Tx}, p3)
-p = convert(QUfourier{Px,Tx}, p3)
+p = convert(EBfourier{P,T}, p1)
+p = convert(EBfourier{P,T}, p3)
+p = convert(QUfourier{P,T}, p3)
 
 
 
 using Base.Test
 
-@inferred QUfourier{Px,Tx}(p1)
-@inferred QUfourier{Px,Tx}(p2)
-@inferred QUfourier{Px,Tx}(p3)
-@inferred QUfourier{Px,Tx}(p4)
+@inferred QUfourier{P,T}(p1)
+@inferred QUfourier{P,T}(p2)
+@inferred QUfourier{P,T}(p3)
+@inferred QUfourier{P,T}(p4)
 
 @inferred 2 * p1 - 5.0 * p1
 @inferred 2 * p1 - 5.0 * p2
@@ -127,3 +132,86 @@ using Base.Test
 @inferred 2 * p4 - 5.0 * p2
 @inferred 2 * p4 - 5.0 * p3
 @inferred 2 * p4 - 5.0 * p4
+
+
+
+##### Testing dot
+r1, r2, r3, r4 = randn(T,nside, nside), randn(T,nside, nside), randn(T,nside, nside), randn(T,nside, nside)
+p1, p2 = QUmap{P,T}(r1, r2), QUmap{P,T}(r3, r4)
+
+@test dot(p1, p2) == dot(p2, p1)
+@test dot(p1, p2) == (dot(r1,r3) + dot(r2,r4))*r𝔽(P,T).Ωpix
+@test dot(p1, p1) > 0
+
+@inferred dot(p1, p2)
+@inferred dot(EBfourier{P,T}(p1), EBfourier{P,T}(p2))
+@inferred dot(QUfourier{P,T}(p1), p2)
+@inferred dot(QUfourier{P,T}(p1), QUfourier{P,T}(p2))
+@inferred dot(EBfourier{P,T}(p1), p2)
+@inferred dot(p1, EBfourier{P,T}(p2))
+@inferred dot(QUmap{P,T}(p1), p2)
+@inferred dot(p1, QUmap{P,T}(p2))
+@inferred dot(QUmap{P,T}(p1), QUmap{P,T}(p2))
+@inferred dot(p1, QUmap{P,T}(QUfourier{P,T}(p2)))
+
+@inferred dot(p1, EBmap{P,T}(p2))
+@inferred dot(EBmap{P,T}(p1), EBmap{P,T}(p2))
+@inferred dot(EBmap{P,T}(p1), p2)
+
+
+wn1 = white_noise(P, T)
+wn2 = white_noise(P, T)
+p = QUmap{P,T}(wn1, wn2)
+dot(p, p) # this should be near 2nside^2
+dot(EBfourier{P,T}(p), EBfourier{P,T}(p)) # this should be near nside^2
+
+
+##### Testing DiagOp
+p1 = QUmap{P,T}(qx, ux)
+p2 = EBmap{P,T}(ex, bx)
+p3 = QUfourier{P,T}(qk, uk)
+p4 = EBfourier{P,T}(ek, bk)
+
+@inferred 𝕃(p1)*p1
+@inferred 𝕃(p1)*p2
+@inferred 𝕃(p1)*p3
+@inferred 𝕃(p1)*p4
+
+@inferred 𝕃(p2)*p1
+@inferred 𝕃(p2)*p2
+@inferred 𝕃(p2)*p3
+@inferred 𝕃(p2)*p4
+
+@inferred 𝕃(p3)*p1
+@inferred 𝕃(p3)*p2
+@inferred 𝕃(p3)*p3
+@inferred 𝕃(p3)*p4
+
+@inferred 𝕃(p4)*p1
+@inferred 𝕃(p4)*p2
+@inferred 𝕃(p4)*p3
+@inferred 𝕃(p4)*p4
+
+L1 = 𝕃(p1)^(-5.3)
+L2 = 𝕃(p2)^(2)
+L3 = 𝕃(p3)^(-.1)
+L4 = 𝕃(p4)^(4)
+L5 = 𝕃(p1)^(1)
+L6 = 𝕃(p2)^(0)
+L7 = 𝕃(p1)^(-1)
+L8 = 𝕃(p4)^(1.5)
+L9 = inv(𝕃(p1))
+L10 = inv(𝕃(p2))
+L11 = 𝕃(p2)^(-1)
+
+L1*p4
+L2*p3
+L3*p2
+L4*p1
+L5*p2
+L6*p2
+L7*p2
+L8*p2
+L9*p2 - L7*p2
+L9*p3 - L7*p3
+L10*p4 - L11*p4
