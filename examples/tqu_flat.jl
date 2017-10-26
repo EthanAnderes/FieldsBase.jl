@@ -36,12 +36,12 @@ end
 has_qu(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+const S02Field{P,T} = Union{TEBfourier{P,T}, TQUmap{P,T}}
 
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
-const S02Field{P,T} = Union{TEBfourier{P,T}, TQUmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:S02Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
@@ -69,7 +69,6 @@ p2 = TEBfourier{P,T}(tk, ek, bk)
 @time convert(TEBfourier{P,T}, p2)
 
 
-
 p = convert(TEBfourier{P,T}, p1)
 p = convert(TEBfourier{P,T}, p2)
 p = convert(TQUmap{P,T}, p2)
@@ -94,7 +93,7 @@ using Base.Test
 
 @inferred dot(p1, p2)
 
-wn1, wn2, wn3 = white_noise(P, T), white_noise(P, T), white_noise(P, T)
+wn1, wn2, wn3 = white_noise(g), white_noise(g), white_noise(g)
 p = TQUmap{P,T}(wn1, wn2, wn3)
 dot(p, p) / 3 / nside^2 # this should be near 1.0
 dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near nside^2

@@ -14,8 +14,9 @@ abstract type Spin end
 abstract type S0 <: Spin end
 abstract type S2 <: Spin end
 abstract type S02 <: Spin end
-abstract type Field{Px<:Pix, S<:Spin} end
-export Pix, Flat, Healpix, Spin, S0, S2, S02, Field
+abstract type Field{P<:Pix, S<:Spin} end
+abstract type HarmonicTransform{P<:Pix, T<:Real} end
+export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 
 include("convert_promote.jl")
 export HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis # used for traits
@@ -37,6 +38,7 @@ export LinOp, DiagOp, 𝕃
 include("util.jl")
 export data, squash, white_noise
 
+#TODO  can we write _rfftdot in a type agnostic way (can be used in 1-d and ArrayFire, e.g.)
 #TODO: add general dimension fourier transforms
 #TODO: can we use splatting to get general spin SN fields for N>2
 #TODO: get a spherical example up and running

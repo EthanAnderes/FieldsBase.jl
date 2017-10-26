@@ -53,17 +53,15 @@ end
 has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+const MyField{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
 
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
-const MyField{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:MyField{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
-
-
 
 
 ############################################################
@@ -74,7 +72,7 @@ nside  = 512
 Θpix   = 2.0
 P     = Flat{Θpix,nside}
 T     = Float32
-g      =  r𝔽(P,T);
+g     = r𝔽(P,T);
 
 qx, ux = rand(T, nside, nside), rand(T, nside, nside)
 ex, bx = rand(T, nside, nside), rand(T, nside, nside)
@@ -150,11 +148,11 @@ p1, p2 = QUmap{P,T}(r1, r2), QUmap{P,T}(r3, r4)
 @inferred dot(EBmap{P,T}(p1), p2)
 
 
-wn1 = white_noise(P, T)
-wn2 = white_noise(P, T)
+wn1 = white_noise(g)
+wn2 = white_noise(g)
 p = QUmap{P,T}(wn1, wn2)
-dot(p, p) # this should be near 2nside^2
-dot(EBfourier{P,T}(p), EBfourier{P,T}(p)) # this should be near nside^2
+dot(p, p)/2/nside^2 # this should be near 1
+dot(EBfourier{P,T}(p), EBfourier{P,T}(p))/2/nside^2 # this should be near 1
 
 
 ##### Testing DiagOp

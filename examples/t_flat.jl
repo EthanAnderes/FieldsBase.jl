@@ -31,17 +31,16 @@ has_qu(::Type{Tfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{false}
 is_map(::Type{Tfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
 
 
+const MyField{Px,Tx} = Union{Tfourier{Px,Tx}, Tmap{Px,Tx}}
 
 
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
-const MyField{Px,Tx} = Union{Tfourier{Px,Tx}, Tmap{Px,Tx}}
 function harmonic_transform(::Type{F}) where F<:MyField{Px,Tx} where {Px<:Flat, Tx<:Real}
     return r𝔽(Px,Tx)
 end
-
 
 
 ############################################################
@@ -103,7 +102,7 @@ t2 = Tmap{Px,Tx}(t2x)
 @inferred dot(Tmap{Px,Tx}(t1), Tmap{Px,Tx}(t2))
 
 
-wn1 = white_noise(Px, Tx)
+wn1 = white_noise(g)
 t = Tmap{Px,Tx}(wn1)
 dot(t, t)/nside^2 # this should be near 1.0
 dot(Tfourier{Px,Tx}(t), Tfourier{Px,Tx}(t))/nside^2 # this should be near nside^2

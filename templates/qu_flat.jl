@@ -55,11 +55,12 @@ end
 has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+const S2Field{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
+
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
-const S2Field{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:S2Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end

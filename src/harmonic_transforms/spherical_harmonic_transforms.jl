@@ -4,7 +4,7 @@
 #  Healpix transform
 #############################################
 
- struct ℍ{P<:Healpix,T<:Real}
+ struct ℍ{P<:Healpix,T<:Real} <: HarmonicTransform{P,T}
     Ωpix::T
     lmax::T
     l::Matrix{T}

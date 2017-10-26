@@ -82,8 +82,8 @@ p1, p2 = QUmap{Px,Tx}(r1, r2), QUmap{Px,Tx}(r3, r4)
 @inferred dot(EBmap{Px,Tx}(p1), p2)
 
 
-wn1 = white_noise(Px, Tx)
-wn2 = white_noise(Px, Tx)
+wn1 = white_noise(g)
+wn2 = white_noise(g)
 p = QUmap{Px,Tx}(wn1, wn2)
 dot(p, p) # this should be near 2nside^2
 dot(EBfourier{Px,Tx}(p), EBfourier{Px,Tx}(p)) # this should be near nside^2
@@ -197,7 +197,7 @@ t2 = Tmap{Px,Tx}(t2x)
 @inferred dot(Tmap{Px,Tx}(t1), Tmap{Px,Tx}(t2))
 
 
-wn1 = white_noise(Px, Tx)
+wn1 = white_noise(g)
 t = Tmap{Px,Tx}(wn1)
 dot(t, t)/nside^2 # this should be near 1.0
 dot(Tfourier{Px,Tx}(t), Tfourier{Px,Tx}(t))/nside^2 # this should be near nside^2
@@ -289,7 +289,7 @@ p = convert(TQUmap{P,T}, p2)
 
 @inferred dot(p1, p2)
 
-wn1, wn2, wn3 = white_noise(P, T), white_noise(P, T), white_noise(P, T)
+wn1, wn2, wn3 = white_noise(g), white_noise(g), white_noise(g)
 p = TQUmap{P,T}(wn1, wn2, wn3)
 dot(p, p) / 3 / nside^2 # this should be near 1.0
 dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near nside^2

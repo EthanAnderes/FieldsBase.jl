@@ -32,12 +32,12 @@ end
 has_qu(::Type{Tfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Tfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+const S0Field{P,T} = Union{Tfourier{P,T}, Tmap{P,T}}
 
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
-const S0Field{P,T} = Union{Tfourier{P,T}, Tmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:S0Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end

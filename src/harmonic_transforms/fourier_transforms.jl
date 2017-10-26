@@ -8,7 +8,7 @@
 #############################################
 
 #  real FFT
-struct r𝔽{P<:Flat,T<:Real,F}
+struct r𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
     Δx::T
     Δk::T
     Ωk::T
@@ -54,7 +54,6 @@ end
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
     ϕk     = atan2.(k[2],k[1])
     FFT    =  Ωpix / (2π) * plan_rfft(rand(T,nside,nside); flags=PATIENT, timelimit=4)
-    FFT    =  Ωpix / (2π) * plan_rfft(rand(T,nside,nside); flags=PATIENT, timelimit=4)
     r𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk), FFT)
 end
 
@@ -78,7 +77,7 @@ r𝔽(::Type{P}) where P<:Flat = r𝔽(P,Float64)
 #############################################
 
 #  complex FFT
-struct 𝔽{P<:Flat,T<:Real,F}
+struct 𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
     Δx::T
     Δk::T
     Ωk::T

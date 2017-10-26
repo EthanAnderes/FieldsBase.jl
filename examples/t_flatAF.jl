@@ -34,15 +34,17 @@ end
 has_qu(::Type{AFTfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{AFTfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
-
+const AFS0Field{P,T} = Union{AFTfourier{P,T}, AFTmap{P,T}}
 
 
 ############################################################
 #  Specify the harmonic transform
 ############################################################
 
+import Base: *, \, +, -, ^
+
 #  ArrayFire FFT
-struct AFr𝔽{P<:Flat,T<:Real}
+struct AFr𝔽{P<:Flat,T<:Real} <: HarmonicTransform{P,T}
     Δx::T
     Δk::T
     Ωk::T
@@ -71,12 +73,9 @@ end
     AFr𝔽{P,T}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk))
 end
 
-import Base: *, \
 (*)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T(g.Ωpix / (2π)) * rfft(x)
 (\)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T((2π) / g.Ωpix) * irfft(x)
 
-
-const AFS0Field{P,T} = Union{AFTfourier{P,T}, AFTmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:AFS0Field{P,T} where {P<:Flat, T<:Real}
     return AFr𝔽(P,T)
 end
@@ -87,7 +86,7 @@ ArrayFire is too eager to promote AFArray{Float32} to AFArray{Float64}:
   e.g. 1.0 .* AFArray{Float32} = AFArray{Float64}
   e.g. AFArray{Float32}.^(5.0) = AFArray{Float64}
 =# #-------------------------------
-import Base: *, \, +, -, ^, dot
+
 (+)(f::F, n::Number) where F<:AFS0Field{P,T} where {P,T<:Real} = F((data(f) .+ T(n))...)
 (+)(n::Number, f::F) where F<:AFS0Field{P,T} where {P,T<:Real} = F((data(f) .+ T(n))...)
 (-)(a::F)            where F<:AFS0Field{P,T} where {P,T<:Real} = F((.- data(a))...)
@@ -97,6 +96,9 @@ import Base: *, \, +, -, ^, dot
 (*)(n::Number, f::F) where F<:AFS0Field{P,T} where {P,T<:Real} = F((T(n) .* data(f))...)
 (^)(op::𝕃{F}, a::Number)  where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
 (^)(op::𝕃{F}, a::Integer) where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
+
+
+# TODO: figure out how to overload _dot so it works for ArrayFire
 
 
 
