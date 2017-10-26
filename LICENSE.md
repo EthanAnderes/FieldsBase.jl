@@ -1,6 +1,6 @@
 The FieldsBase.jl package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2016: Ethan Anderes.
+> Copyright (c) 2016: Ethan Anderes and Marius Millea.
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the

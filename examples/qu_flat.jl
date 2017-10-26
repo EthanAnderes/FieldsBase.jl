@@ -90,7 +90,7 @@ p = convert(QUfourier{P,T}, p1)
 p.qk - g * p1.qx
 
 @time convert(QUfourier{P,T}, p4)
-@time convert(QUfourier{P,T}, p1) 
+@time convert(QUfourier{P,T}, p1)
 
 
 
