@@ -63,7 +63,7 @@ is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 #  Specify the harmonic transform
 ############################################################
 
-const S02Field{P,T} = Union{TEBfourier{P,T}, TQUmap{P,T}}
+const S02Field{P,T} = Union{TEBfourier{P,T}, TEBmap{P,T}, TQUmap{P,T}, TQUfourier{P,T}}
 function harmonic_transform(::Type{F}) where F<:S02Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
