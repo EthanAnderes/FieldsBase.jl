@@ -49,5 +49,3 @@ function _rfftdot(a,b)
     @assert size(a)==size(b) && n==m÷2+1
     real(vecdot(a[1,:],b[1,:]) + 2vecdot(a[2:end-1,:],b[2:end-1,:]) + (iseven(m) ? 1 : 2) * vecdot(a[end,:],b[end,:]))
 end
-
-# TODO dot for Pix <: Healpix

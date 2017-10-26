@@ -37,5 +37,13 @@ export LinOp, DiagOp, 𝕃
 include("util.jl")
 export data, squash, white_noise
 
+#TODO: add general dimension fourier transforms
+#TODO: can we use splatting to get general spin SN fields for N>2
+#TODO: get a spherical example up and running
+#TODO: can we get rid of the "Method definition overwritten" when overloading ebk_to_quk, etc...
+#TODO: can we add a basic pixel space lensing algo which is opt-in for users (and works on a GPU).
+#TODO: code up squash that can be computed directly on the GPU.
+#TODO: work on getting vecdot and dot working for ArrayFire.
+#TODO: dot for Pix <: Healpix
 
 end # end Module
