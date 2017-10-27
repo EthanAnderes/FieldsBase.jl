@@ -3,6 +3,17 @@
 
 using ArrayFire
 
+# Macro for timing that has a syncronization block
+#NOTE: I don't think this is exactly correct
+macro aftime(exp...)
+      exp1 = quote
+          $exp
+          sync(get_device()) #TODO check this is right
+      end |> esc
+      :(@time $exp1)
+end
+
+
 # Basic useage for ArrayFire
 # a = AFArray(rand(Complex{Float32}, 10,10))
 # a = rand(AFArray{Float32}, 100, 100)
@@ -110,7 +121,7 @@ ArrayFire is too eager to promote AFArray{Float32} to AFArray{Float64}:
 using Base.Test
 # using Test # for v0.7
 
-nside  = 512
+nside  = 1024
 Θpix   = 2.0
 Px     = Flat{Θpix,nside}
 Tx     = Float32
@@ -132,7 +143,26 @@ t2 = AFTfourier{Px,Tx}(tk)
 
 2 * t1 - 5 * t1
 2 * t1 - Tx(5.0) * t1
-2 * t1 - 5.0 * t1
+@aftime 2 * t1 - 5.0 * t2 #NOTE not sure this is syncronizing correctly
+@time sync((2 * t1 - 5.0 * t2).tk)
+function foo(t1, t2)
+    a = 2 * t1 - 5 * t2
+    b = 2 * t1 - 5 * a
+    c = a-b
+    sync(c.tk)
+    return c
+end
+@time foo(t1, t2)
+
+#=
+# ArrayFire fields (Float32)
+0.009777 seconds (114 allocations: 2.813 KiB)
+0.009869 seconds (114 allocations: 2.813 KiB)
+
+# Regular arrays (Float32)
+0.091618 seconds (69 allocations: 76.135 MiB, 77.88% gc time)
+0.025750 seconds (69 allocations: 76.135 MiB, 26.73% gc time)
+=#
 
 
 @inferred 2 * t1 - 5.0 * t1

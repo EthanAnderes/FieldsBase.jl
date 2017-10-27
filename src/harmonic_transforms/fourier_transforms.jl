@@ -22,7 +22,7 @@ struct r𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
     FFT::F
 end
 
-function ebk_to_quk(ek, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+function harmonic_eb_to_qu(ek, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     rw, cl = size(ek)
     qk = Array{Complex{T},2}(rw,cl)
     uk = Array{Complex{T},2}(rw,cl)
@@ -30,7 +30,7 @@ function ebk_to_quk(ek, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     @inbounds uk .= .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
     return qk, uk
 end
-function quk_to_ebk(qk, uk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+function harmonic_qu_to_eb(qk, uk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     rw, cl = size(qk)
     ek = Array{Complex{T},2}(rw,cl)
     bk = Array{Complex{T},2}(rw,cl)
@@ -92,12 +92,12 @@ struct 𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
 end
 
 
-function ebk_to_quk(ek, bk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
+function harmonic_eb_to_qu(ek, bk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
     qk = .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
     uk = .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
     return qk, uk
 end
-function quk_to_ebk(qk, uk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
+function harmonic_qu_to_eb(qk, uk, g::𝔽{P,T}) where {P<:Pix, T<:Real}
     ek = .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
     bk =    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
     return ek, bk

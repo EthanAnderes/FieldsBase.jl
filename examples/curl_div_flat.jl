@@ -64,13 +64,13 @@ function harmonic_transform(::Type{F}) where F<:MyField{P,T} where {P<:Flat, T<:
     return r𝔽(P,T)
 end
 
-import FieldsBase: ebk_to_quk, quk_to_ebk
-function quk_to_ebk(v1k, v2k, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+import FieldsBase: harmonic_eb_to_qu, harmonic_qu_to_eb
+function harmonic_qu_to_eb(v1k, v2k, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     dk = v1k .* (im.*g.k[1]) .+ v2k .* (im.*g.k[2])
     ck = v1k .* (im.*g.k[2]) .- v2k .* (im.*g.k[1])
     return dk, ck
 end
-function ebk_to_quk(dk, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
+function harmonic_eb_to_qu(dk, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     invΔk = squash.( .- (g.k[1].^2 .+ g.k[2].^2) )
     v1k = invΔk .* ( (im.*g.k[1]) .* dk .+ (im.*g.k[2]) .* ck )
     v2k = invΔk .* ( (im.*g.k[2]) .* dk .- (im.*g.k[1]) .* ck )

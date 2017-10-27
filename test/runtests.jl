@@ -85,8 +85,8 @@ p1, p2 = QUmap{Px,Tx}(r1, r2), QUmap{Px,Tx}(r3, r4)
 wn1 = white_noise(g)
 wn2 = white_noise(g)
 p = QUmap{Px,Tx}(wn1, wn2)
-dot(p, p) # this should be near 2nside^2
-dot(EBfourier{Px,Tx}(p), EBfourier{Px,Tx}(p)) # this should be near nside^2
+dot(p, p)/2/nside^2 # this should be near 1
+dot(EBfourier{Px,Tx}(p), EBfourier{Px,Tx}(p))/2/nside^2 # this should be near 1
 
 
 ##### Testing DiagOp

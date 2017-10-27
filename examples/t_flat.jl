@@ -51,7 +51,7 @@ end
 using Base.Test
 # using Test # for v0.7
 
-nside  = 512
+nside  = 1024
 Θpix   = 2.0
 Px     = Flat{Θpix,nside}
 Tx     = Float32
@@ -81,6 +81,14 @@ t = convert(Tfourier{Px,Tx}, t1)
 @inferred 2 * t2 - 5.0 * t1
 @inferred 2 * t2 - 5.0 * t2
 
+@time 2 * t1 - 5.0 * t2
+function foo(t1, t2)
+    a = 2 * t1 - 5 * t2
+    b = 2 * t1 - 5 * a
+    c = a-b
+    return c
+end
+@time foo(t1, t2) 
 
 
 ##### Testing dot
