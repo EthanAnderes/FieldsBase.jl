@@ -84,9 +84,22 @@ end
 # dot(fourier, fourier)
 function _dot(a::X, b::X, ::Type{IsMap{false}}) where X<:MyField{P,T} where {T,P<:Flat{θ,m}} where {θ,m}
     FT = harmonic_transform(X)
-    _rfftdot1d = (x,y) -> real(vecdot(x[1],y[1]) + 2vecdot(x[2:end-1],y[2:end-1]) + (iseven(m) ? 1 : 2) * vecdot(x[end],y[end]))
-    sum(map(_rfftdot1d, data(a),data(b))) * FT.Ωk
+    _complexdot = function (a,b)
+        ra, ia = real(a), imag(a)
+        rb, ib = real(b), imag(b)
+        rtn  = 2*sum(ra.*rb)
+        rtn += 2*sum(ia.*ib)
+        rtn -= sum(ra[1].*rb[1])
+        rtn -= sum(ia[1].*ib[1])
+        if iseven(m)
+               rtn -= sum(ra[end].*rb[end])
+               rtn -= sum(ia[end].*ib[end])
+        end
+        return rtn
+    end
+    sum(map(_complexdot, data(a),data(b))) * FT.Ωk
 end
+
 
 
 ############################################################
