@@ -14,9 +14,23 @@ macro aftime(exp...)
 end
 
 
-# Basic useage for ArrayFire
-# a = AFArray(rand(Complex{Float32}, 10,10))
-# a = rand(AFArray{Float32}, 100, 100)
+#=  Basic useage for ArrayFire ... how to get squash to work for ArrayFire?
+## I think we need bool ? rtn1 : rtn2 to work for ArrayFire ...
+a = rand(Float32, 100, 100)
+b = rand(Complex{Float32}, 100, 100)
+a[1] = Inf
+a[2] = -Inf
+a[3] = NaN
+
+b[1] = Inf + im * 0
+b[2] = 0 + im * Inf
+b[3] = NaN + im * Inf
+
+a = AFArray(a)
+b = AFArray(b)
+squash(x::T) where {T<:Number}  = isnan(x) ? zero(T) : (x*x < Inf) ? x : zero(T)
+squash.(a)
+=#
 
 ############################################################
 #  Define the field types and their trait properties

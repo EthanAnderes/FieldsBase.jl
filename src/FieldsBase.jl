@@ -7,6 +7,8 @@ else
 end
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
+
+####################################
 abstract type Pix end
 abstract type Flat{Θpix,nside} <: Pix end
 abstract type Healpix{nside}   <: Pix end
@@ -18,34 +20,41 @@ abstract type Field{P<:Pix, S<:Spin} end
 abstract type HarmonicTransform{P<:Pix, T<:Real} end
 export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 
+
+####################################
 include("convert_promote.jl")
 export HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis # used for traits
 export harmonic_transform
 
+####################################
 include("harmonic_transforms/fourier_transforms.jl")
 export r𝔽, 𝔽
 
+####################################
 include("harmonic_transforms/spherical_harmonic_transforms.jl")
-export ℍ # fourier and spherical transforms
+export ℍ
 
+####################################
 include("field_ops.jl")
 
+####################################
 include("linear_ops.jl")
 export LinOp, DiagOp, 𝕃
 
+####################################
 #TODO include("lense_transforms.jl")
 
+####################################
 include("util.jl")
 export data, squash, white_noise
 
-#TODO  can we write _rfftdot in a type agnostic way (can be used in 1-d and ArrayFire, e.g.)
-#TODO: add general dimension fourier transforms
+
+
+#TODO: code up squash that can be computed directly on the GPU.
+#TODO: dot for Pix <: Healpix in field_ops.jl
 #TODO: can we use splatting to get general spin SN fields for N>2
 #TODO: get a spherical example up and running
-#TODO: can we get rid of the "Method definition overwritten" when overloading ebk_to_quk, etc...
+#TODO: can we get rid of the "Method definition overwritten" when overloading harmonic_eb_to_qu, etc...
 #TODO: can we add a basic pixel space lensing algo which is opt-in for users (and works on a GPU).
-#TODO: code up squash that can be computed directly on the GPU.
-#TODO: work on getting vecdot and dot working for ArrayFire.
-#TODO: dot for Pix <: Healpix
 
 end # end Module
