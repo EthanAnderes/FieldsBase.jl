@@ -33,19 +33,30 @@ dot(a::X, b::X) where X<:Field{P} where P<:Flat = _dot(a, b, is_map(X))
 # dot(map, map)
 function _dot(a::X, b::X, ::Type{IsMap{true}}) where X<:Field{P} where P<:Flat
     FFT = harmonic_transform(X)
-    return sum(map(vecdot, data(a),data(b))) * FFT.Ωpix
+    return sum(map(_realdot, data(a),data(b))) * FFT.Ωpix
 end
 
 # dot(fourier, fourier)
 function _dot(a::X, b::X, ::Type{IsMap{false}}) where X<:Field{P} where P<:Flat
     FFT = harmonic_transform(X)
-    sum(map(_rfftdot, data(a),data(b))) * FFT.Ωk
+    sum(map(_complexdot, data(a),data(b))) * FFT.Ωk
 end
 
-# Dots two matrices assumed to be the output of a real-FFT, s.t. if
-# A/B::Matrix{<:Real}, `real(vecdot(fft(A),fft(B))) == _rfftdot(rfft(A),rfft(B))`
-function _rfftdot(a,b)
+# these work better for ArrayFire
+_realdot(a,b) = sum(a.*b)
+
+function _complexdot(a,b)
     n,m = size(a)
     @assert size(a)==size(b) && n==m÷2+1
-    real(vecdot(a[1,:],b[1,:]) + 2vecdot(a[2:end-1,:],b[2:end-1,:]) + (iseven(m) ? 1 : 2) * vecdot(a[end,:],b[end,:]))
+    ra, ia = real(a), imag(a)
+    rb, ib = real(b), imag(b)
+    rtn  = 2*sum(ra.*rb)
+    rtn += 2*sum(ia.*ib)
+    rtn -= sum(ra[1,:].*rb[1,:])
+    rtn -= sum(ia[1,:].*ib[1,:])
+    if iseven(m)
+           rtn -= sum(ra[end,:].*rb[end,:])
+           rtn -= sum(ia[end,:].*ib[end,:])
+    end
+    return rtn
 end

@@ -178,6 +178,32 @@ t1 = AFTmap{Px,Tx}(t1x)
 t2 = AFTmap{Px,Tx}(t2x)
 
 
+
+##### Testing dot
+t1x = rand(Tx, nside, nside)
+t2x = rand(Tx, nside, nside)
+t1 = AFTmap{Px,Tx}(t1x)
+t2 = AFTmap{Px,Tx}(t2x)
+
+@test dot(t1, t2) == dot(t2, t1)
+@test dot(t1, t2) == dot(t1x,t2x)*r𝔽(Px,Tx).Ωpix
+@test dot(t1, t1) > 0
+
+@inferred dot(t1, t2)
+@inferred dot(AFTfourier{Px,Tx}(t1), AFTfourier{Px,Tx}(t2))
+@inferred dot(AFTfourier{Px,Tx}(t1), t2)
+@inferred dot(t1, AFTfourier{Px,Tx}(t2))
+@inferred dot(AFTmap{Px,Tx}(t1), t2)
+@inferred dot(t1, AFTmap{Px,Tx}(t2))
+@inferred dot(AFTmap{Px,Tx}(t1), AFTmap{Px,Tx}(t2))
+
+
+wn1 = white_noise(g)
+t = AFTmap{Px,Tx}(wn1)
+dot(t, t)/nside^2 # this should be near 1.0
+dot(AFTfourier{Px,Tx}(t), AFTfourier{Px,Tx}(t))/nside^2 # this should be near nside^2
+
+
 #NOTE dot has problems ... since vecdot isn't implimented in ArrayFire yet ....
 
 t1 = AFTmap{Px,Tx}(tx)
