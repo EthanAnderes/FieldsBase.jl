@@ -15,7 +15,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # Tmap
-struct Tmap{P<:Flat,T<:Real} <: Field{P,S0}
+struct Tmap{P<:Flat,T<:Real} <: Field{P,T,S0}
     tx::Matrix{T}
     Tmap{P,T}(tx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(tx)
 end
@@ -25,7 +25,7 @@ is_lense_basis(::Type{Tmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Tfourier
-struct Tfourier{P<:Pix,T<:Real} <: Field{P,S0}
+struct Tfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
     tk::Matrix{Complex{T}}
     Tfourier{P,T}(tk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk))
 end

@@ -2,11 +2,11 @@
 # linear operators
 #############################################
 
-abstract type LinOp{P<:Pix, S<:Spin}  end
+abstract type LinOp{P<:Pix, T<:Real, S<:Spin}  end
 
-struct DiagOp{F<:Field,P,S} <: LinOp{P,S}
+struct DiagOp{F<:Field,P,T,S} <: LinOp{P,T,S}
     f::F
-    DiagOp(f::F) where {P,S,F<:Field{P,S}} = new{F,P,S}(f)
+    DiagOp(f::F) where {P,T,S,F<:Field{P,T,S}} = new{F,P,T,S}(f)
 end
 
 const 𝕃 = DiagOp

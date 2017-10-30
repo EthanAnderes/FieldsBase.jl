@@ -63,7 +63,8 @@ r1, r2, r3, r4 = randn(Tx,nside, nside), randn(Tx,nside, nside), randn(Tx,nside,
 p1, p2 = QUmap{Px,Tx}(r1, r2), QUmap{Px,Tx}(r3, r4)
 
 @test dot(p1, p2) == dot(p2, p1)
-@test dot(p1, p2) == (dot(r1,r3) + dot(r2,r4))*r𝔽(Px,Tx).Ωpix
+#@test dot(p1, p2) == (dot(r1,r3) + dot(r2,r4))*r𝔽(Px,Tx).Ωpix
+@test dot(p1, p2) == (sum(r1.*r3) + sum(r2.*r4))*r𝔽(Px,Tx).Ωpix
 @test dot(p1, p1) > 0
 
 @inferred dot(p1, p2)

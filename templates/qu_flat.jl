@@ -16,7 +16,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # QUmap
-struct QUmap{P<:Flat,T<:Real} <: Field{P,S2}
+struct QUmap{P<:Flat,T<:Real} <: Field{P,T,S2}
     qx::Matrix{T}
     ux::Matrix{T}
     QUmap{P,T}(qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(qx, ux)
@@ -27,7 +27,7 @@ is_lense_basis(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # QUfourier
-struct QUfourier{P<:Pix,T<:Real} <: Field{P,S2}
+struct QUfourier{P<:Pix,T<:Real} <: Field{P,T,S2}
     qk::Matrix{Complex{T}}
     uk::Matrix{Complex{T}}
     QUfourier{P,T}(qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(qk), complex.(uk))
@@ -37,7 +37,7 @@ is_map(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
 # EBmap
-struct EBmap{P<:Pix, T<:Real} <: Field{P,S2}
+struct EBmap{P<:Pix, T<:Real} <: Field{P,T,S2}
     ex::Matrix{T}
     bx::Matrix{T}
     EBmap{P,T}(ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(ex, bx)
@@ -47,7 +47,7 @@ is_map(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
 # EBfourier
-struct EBfourier{P<:Pix, T<:Real} <: Field{P,S2}
+struct EBfourier{P<:Pix, T<:Real} <: Field{P,T,S2}
     ek::Matrix{Complex{T}}
     bk::Matrix{Complex{T}}
     EBfourier{P,T}(ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(ek), complex.(bk))

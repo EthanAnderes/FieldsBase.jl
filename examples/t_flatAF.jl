@@ -40,7 +40,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # AFTmap
-struct AFTmap{P<:Flat,T<:Real} <: Field{P,S0}
+struct AFTmap{P<:Flat,T<:Real} <: Field{P,T,S0}
     tx::AFArray{T,2}
     AFTmap{P,T}(tx::Array) where {P<:Flat,T<:Real} = new{P,T}(AFArray(T.(tx)))
     AFTmap{P,T}(tx::AFArray) where {P<:Flat,T<:Real} = new{P,T}(tx)
@@ -51,7 +51,7 @@ is_lense_basis(::Type{AFTmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Tfourier
-struct AFTfourier{P<:Pix,T<:Real} <: Field{P,S0}
+struct AFTfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
     tk::AFArray{Complex{T},2}
     AFTfourier{P,T}(tk::Array) where {P<:Flat,T<:Real}  = new{P,T}(AFArray(complex.(T.(tk))))
     AFTfourier{P,T}(tk::AFArray) where {P<:Flat,T<:Real} = new{P,T}(tk)
@@ -200,7 +200,7 @@ t1 = AFTmap{Px,Tx}(t1x)
 t2 = AFTmap{Px,Tx}(t2x)
 
 @test dot(t1, t2) == dot(t2, t1)
-@test dot(t1, t2) == dot(t1x,t2x)*r𝔽(Px,Tx).Ωpix
+@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽(Px,Tx).Ωpix
 @test dot(t1, t1) > 0
 
 @inferred dot(t1, t2)

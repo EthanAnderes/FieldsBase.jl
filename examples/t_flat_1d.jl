@@ -14,7 +14,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # Tmap
-struct Tmap{P<:Flat,T<:Real} <: Field{P,S0}
+struct Tmap{P<:Flat,T<:Real} <: Field{P,T,S0}
     tx::Vector{T}
     Tmap{P,T}(tx::Vector) where {P<:Flat,T<:Real} = new{P,T}(tx)
 end
@@ -24,7 +24,7 @@ is_lense_basis(::Type{Tmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Tfourier
-struct Tfourier{P<:Pix,T<:Real} <: Field{P,S0}
+struct Tfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
     tk::Vector{Complex{T}}
     Tfourier{P,T}(tk::Vector) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk))
 end
@@ -154,7 +154,7 @@ t1 = Tmap{P,T}(t1x)
 t2 = Tmap{P,T}(t2x)
 
 @test dot(t1, t2) == dot(t2, t1)
-@test dot(t1, t2) == dot(t1x,t2x)*r𝔽1d(P,T).Ωpix
+@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽1d(P,T).Ωpix
 @test dot(t1, t1) > 0
 
 @inferred dot(t1, t2)

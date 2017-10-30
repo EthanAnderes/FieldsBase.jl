@@ -15,7 +15,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # TQUmap
-struct TQUmap{P<:Flat,T<:Real} <: Field{P,S02}
+struct TQUmap{P<:Flat,T<:Real} <: Field{P,T,S02}
     tx::Matrix{T}
     qx::Matrix{T}
     ux::Matrix{T}
@@ -27,7 +27,7 @@ is_lense_basis(::Type{TQUmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # TQUfourier
-struct TQUfourier{P<:Flat,T<:Real} <: Field{P,S02}
+struct TQUfourier{P<:Flat,T<:Real} <: Field{P,T,S02}
     tk::Matrix{Complex{T}}
     qk::Matrix{Complex{T}}
     uk::Matrix{Complex{T}}
@@ -38,7 +38,7 @@ is_map(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
 # TEBmap
-struct TEBmap{P<:Pix, T<:Real} <: Field{P,S02}
+struct TEBmap{P<:Pix, T<:Real} <: Field{P,T,S02}
     tx::Matrix{Complex{T}}
     ex::Matrix{Complex{T}}
     bx::Matrix{Complex{T}}
@@ -49,7 +49,7 @@ is_map(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
 # TEBfourier
-struct TEBfourier{P<:Pix, T<:Real} <: Field{P,S02}
+struct TEBfourier{P<:Pix, T<:Real} <: Field{P,T,S02}
     tk::Matrix{Complex{T}}
     ek::Matrix{Complex{T}}
     bk::Matrix{Complex{T}}

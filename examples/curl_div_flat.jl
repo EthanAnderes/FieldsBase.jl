@@ -18,7 +18,7 @@ using FieldsBase
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # the Vmap field is designated as the QU field
-struct Vmap{P<:Flat,T<:Real} <: Field{P,S2}
+struct Vmap{P<:Flat,T<:Real} <: Field{P,T,S2}
     v1x::Matrix{T}
     v2x::Matrix{T}
     Vmap{P,T}(v1x::Matrix, v2x::Matrix) where {P<:Flat,T<:Real} = new{P,T}(v1x, v2x)
@@ -28,7 +28,7 @@ is_map(::Type{Vmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 is_lense_basis(::Type{Vmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
-struct Vfourier{P<:Pix,T<:Real} <: Field{P,S2}
+struct Vfourier{P<:Pix,T<:Real} <: Field{P,T,S2}
     v1k::Matrix{Complex{T}}
     v2k::Matrix{Complex{T}}
     Vfourier{P,T}(v1k::Matrix, v2k::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(v1k), complex.(v2k))
@@ -37,7 +37,7 @@ has_qu(::Type{Vfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{Vfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 # H for Helmholtz
-struct Hmap{P<:Pix, T<:Real} <: Field{P,S2}
+struct Hmap{P<:Pix, T<:Real} <: Field{P,T,S2}
     dx::Matrix{T} #<-- div
     cx::Matrix{T} #<-- curl
     Hmap{P,T}(dx::Matrix, cx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(dx, cx)
@@ -46,7 +46,7 @@ has_qu(::Type{Hmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Hmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
-struct Hfourier{P<:Pix, T<:Real} <: Field{P,S2}
+struct Hfourier{P<:Pix, T<:Real} <: Field{P,T,S2}
     dk::Matrix{Complex{T}}
     ck::Matrix{Complex{T}}
     Hfourier{P,T}(dk::Matrix, ck::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(dk), complex.(ck))
@@ -159,7 +159,7 @@ r1, r2, r3, r4 = randn(T,nside, nside), randn(T,nside, nside), randn(T,nside, ns
 p1, p2 = Vmap{P,T}(r1, r2), Vmap{P,T}(r3, r4)
 
 @test dot(p1, p2) == dot(p2, p1)
-@test dot(p1, p2) == (dot(r1,r3) + dot(r2,r4))*r𝔽(P,T).Ωpix
+@test dot(p1, p2) == (sum(r1.*r3) + sum(r2.*r4))*r𝔽(P,T).Ωpix
 @test dot(p1, p1) > 0
 
 @inferred dot(p1, p2)
