@@ -16,7 +16,10 @@ abstract type Spin end
 abstract type S0 <: Spin end
 abstract type S2 <: Spin end
 abstract type S02 <: Spin end
-abstract type Field{P<:Pix, S<:Spin} end
+abstract type Field{P<:Pix, S<:Spin} end 
+#TODO: Might be best to make this Field{P<:Pix, T<:Real, S<:Spin} 
+# I think it would be more useful ... 
+# test it out for complex fields in Pixel space and Healpix fields
 abstract type HarmonicTransform{P<:Pix, T<:Real} end
 export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 
