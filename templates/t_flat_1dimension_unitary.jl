@@ -84,7 +84,7 @@ function white_noise(g::r𝔽1d{P,T}) where {T,P<:Flat{θ,n}} where {θ,n}
 end
 
 # dot(map, map)
-function _dot(a::X, b::X, ::Type{IsMap{true}}) where X<:Field{P} where P<:Flat
+function _dot(a::X, b::X, ::Type{IsMap{true}}) where X<:FField{P} where P<:Flat
     _realdot(a,b) = sum(a.*b)
     sum(map(_realdot, data(a),data(b)))
 end
