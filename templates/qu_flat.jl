@@ -64,3 +64,30 @@ const S2Field{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T
 function harmonic_transform(::Type{F}) where F<:S2Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
+
+
+
+
+
+
+
+
+############################################################
+#  getindex (optional)
+############################################################
+
+import Base: getindex
+
+# NOTE: these are not type stable
+function getindex(f::S2Field{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
+    (sym == :ek)  ? EBfourier{P,T}(f).ek :
+    (sym == :bk)  ? EBfourier{P,T}(f).bk :
+    (sym == :qk)  ? QUfourier{P,T}(f).qk :
+    (sym == :uk)  ? QUfourier{P,T}(f).uk :
+    (sym == :ex)  ? EBmap{P,T}(f).ex :
+    (sym == :bx)  ? EBmap{P,T}(f).bx :
+    (sym == :qx)  ? QUmap{P,T}(f).qx :
+    (sym == :ux)  ? QUmap{P,T}(f).ux :
+    error("index is not defined")
+end
+

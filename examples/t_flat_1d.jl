@@ -66,7 +66,7 @@ end
     k      = k_side[1:nside÷2+1]
     x      = x_side
     dm     = 1 #<-- dimension
-    FFT    =  ( (Δx / √(2π))^dm ) * plan_rfft(rand(T,nside))
+    FFT    =  (Ωpix * ((2π) ^ (-dm/2))) * plan_rfft(rand(T,nside))
     r𝔽1d{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, FFT)
 end
 

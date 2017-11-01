@@ -41,3 +41,19 @@ const S0Field{P,T} = Union{Tfourier{P,T}, Tmap{P,T}}
 function harmonic_transform(::Type{F}) where F<:S0Field{P,T} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
+
+
+############################################################
+#  getindex (optional)
+############################################################
+
+import Base: getindex
+
+# NOTE: these are not type stable
+function getindex(f::S0Field{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
+    (sym == :tk)  ? Tfourier{P,T}(f).tk :
+    (sym == :tx)  ? Tmap{P,T}(f).tx :
+    error("index is not defined")
+end
+
+
