@@ -26,11 +26,16 @@ export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 include("convert_promote.jl")
 export harmonic_transform, HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis 
 
-include("harmonic_transforms/fourier_transforms.jl")
-export r𝔽, 𝔽
+
+include("harmonic_transforms/real_2d_flat_fourier.jl")
+export r𝔽
 
 include("harmonic_transforms/spherical_harmonic_transforms.jl")
 export rℍ
+
+include("harmonic_transforms/complex_2d_flat_fourier.jl")
+include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
+include("harmonic_transforms/real_2d_flat_unitary_fourier.jl")
 
 include("field_ops.jl")
 

@@ -13,7 +13,9 @@
 ############################################################
 
 using FieldsBase
+using FieldsBase: r𝕌𝔽1
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
+
 
 # Fmap
 struct Fmap{P<:Flat,T<:Real} <: Field{P,T,S0}
@@ -40,46 +42,13 @@ const FField{P,T} = Union{Ffourier{P,T}, Fmap{P,T}}
 #  Specify the harmonic transform
 ############################################################
 
-import Base: *, \
 import FieldsBase: _dot, white_noise
 
-#  1-d real FFT
-struct r𝔽1d{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
-    Δx::T
-    Δk::T
-    Ωk::T
-    Ωpix::T
-    period::T
-    nyq::T
-    k::Vector{T}
-    x::Vector{T}
-    FFT::F
-end
-
-@generated function r𝔽1d(::Type{P},::Type{T}) where T<:Real where P<:Flat{Θpix, nside}  where {Θpix, nside}
-    Δx     = Θpix
-    period = Δx*nside
-    Δk     = 1/period
-    Ωk     = Δk
-    Ωpix   = Δx
-    nyq    = 1 / (2Δx)
-    k_side = ifftshift(-nside÷2:(nside-1)÷2) * Δk
-    x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
-    k      = k_side[1:nside÷2+1]
-    x      = x_side
-    dm     = 1 #<-- dimension
-    FFT    =  (nside^(-dm/2)) * plan_rfft(rand(T,nside)) # unitary normization
-    r𝔽1d{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, FFT)
-end
-
-(*)(g::r𝔽1d{P,T}, x) where {P<:Pix,T} = g.FFT * x
-(\)(g::r𝔽1d{P,T}, x) where {P<:Pix,T} = g.FFT \ x
-
 function harmonic_transform(::Type{F}) where F<:FField{P,T} where {P<:Flat, T<:Real}
-    return r𝔽1d(P,T)
+    return r𝕌𝔽1(P,T)
 end
 
-function white_noise(g::r𝔽1d{P,T}) where {T,P<:Flat{θ,n}} where {θ,n}
+function white_noise(g::r𝕌𝔽1{P,T}) where {T,P<:Flat{θ,n}} where {θ,n}
     randn(T,n)  #<----------- needs checking
 end
 

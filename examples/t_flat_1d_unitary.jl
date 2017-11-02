@@ -4,10 +4,10 @@ include("/Users/ethananderes/Dropbox/FieldsBase/templates/t_flat_1dimension_unit
 
 nside = 2^12
 Θpix  = 1/nside
+dm    = 1
 P     = Flat{Θpix,nside}
 T     = Float64
-g     =  r𝔽1d(P,T);
-dm    = 1
+g     = r𝕌𝔽1(P,T);
 
 #= Note:
 For unitary fft, Σ = W* Λ W where Λ = W Σ W* and W W* = I
@@ -24,11 +24,11 @@ function normalize_Λ(Λk,nside,dm)
 end
 
 
-ρ = 0.01 * g.period
+ρ = 0.05 * g.period
 ν = 1.4
 
 # -------- spectral densities ------
-Maternk     = normalize_Λ(( 4ν/ρ^2 + abs2.(g.k) ) .^ (-ν - dm/2), nside, dm)
+Maternk     = normalize_Λ(( 4ν/ρ^2 + abs2.(g.k) ) .^ (- ν - dm/2), nside, dm)
 Triangk     = normalize_Λ(real.(g * map(x->trang(x,ρ), g.x)), nside, dm)
 # plot( (1/nside^(dm/2)) * ( g \ Maternk)) # this is the auto-cov function
 
@@ -53,16 +53,17 @@ sqrtΣν = sqrt.(Maternk)  |> Ffourier{P,T} |> 𝕃 # note: no factor (2π)^(-dm
 sqrtΣt = sqrt.(Triangk)  |> Ffourier{P,T} |> 𝕃
 sim_ν = sqrtΣν * Fmap{P,T}(white_noise(g))
 sim_t = sqrtΣt * Fmap{P,T}(white_noise(g))
-# plot(sim_ν[:fx])
-# plot(sim_t[:fx])
-
+#=
+plot(sim_ν[:fx][1:1000])
+plot(sim_t[:fx][1:1000])
+=#
 
 ########################################
 #  sparse approx to log
 ########################################
 
-sprs_sz = 50 # approx each col with this number of non-zeros
 # --- truncation
+# sprs_sz = 50 # approx each col with this number of non-zeros
 # splogΣν = spzeros(nside, nside)
 # splogΣt = spzeros(nside, nside)
 # for ind = 1:nside
@@ -79,10 +80,9 @@ sprs_sz = 50 # approx each col with this number of non-zeros
 
 
 # -------  local cov matrix log
-# faster version 
+window    = -50:50
+sprs_sz   = length(window)
 get_sparse_logΣ = function ()
-	window    = -25:25
-	sprs_sz   = length(window)
 	intrir_Σν = zeros(sprs_sz,sprs_sz)
 	intrir_Σt = zeros(sprs_sz,sprs_sz)
 	mid_pnt = nside÷2
@@ -122,7 +122,7 @@ end
 
 # ----- plot --
 #=
-ind = 1
+ind = 1000
 t_impls = (t=zeros(T,nside); t[ind] = 1; t) |> Fmap{P,T}
 logΣν_col = (logΣν * t_impls)[:fx] 
 plot(splogΣν[:,ind])
@@ -168,7 +168,7 @@ data_spt = deepcopy(t_impls)[:fx]
 # test_t     = deepcopy(t_impls)
 # data_spt   = deepcopy(t_impls)[:fx] 
 
-nsteps     = 500; ϵ = 1/500
+nsteps     = 1000; ϵ = 1/1000
 for n      = 0:nsteps-1
 	test_t     += ϵ * (logΣt * test_t)
 	test_ν     += ϵ * (logΣν * test_ν)
@@ -184,13 +184,13 @@ figure()
 subplot(2,1,1)
 plot(data_t)
 subplot(2,1,2)
-plot(data_spt, alpha=0.2)
+plot(data_spt)
 
 figure()
 subplot(2,1,1)
 plot(data_ν)
 subplot(2,1,2)
-plot(data_spν, alpha=0.2)
+plot(data_spν)
 
 #=
 plot(data_ν)
@@ -214,7 +214,7 @@ data_spν = deepcopy(t_impls)[:fx]
 test_t   = deepcopy(t_impls)
 data_spt = deepcopy(t_impls)[:fx]
 
-nsteps = 500; ϵ = 1/500
+nsteps = 1000; ϵ = 1/1000
 for n = nsteps:-1:1
 	test_t   -= ϵ * (logΣt * test_t)
 	test_ν   -= ϵ * (logΣν * test_ν)
@@ -230,13 +230,13 @@ figure()
 subplot(2,1,1)
 plot(data_t)
 subplot(2,1,2)
-plot(data_spt, alpha=0.2)
+plot(data_spt)
 
 figure()
 subplot(2,1,1)
 plot(data_ν)
 subplot(2,1,2)
-plot(data_spν, alpha=0.2)
+plot(data_spν)
 
 
 #= 
@@ -258,7 +258,7 @@ plot(data_ν - data_spν)
 
 data_spν = deepcopy(sim_ν)[:fx] 
 data_spt = deepcopy(sim_t)[:fx]
-nsteps = 500; ϵ = 1/500
+nsteps = 1000; ϵ = 1/1000
 for n = nsteps:-1:1
     data_spt -= ϵ * (splogΣt * data_spt)
     data_spν -= ϵ * (splogΣν * data_spν)
