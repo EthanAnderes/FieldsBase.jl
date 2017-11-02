@@ -57,12 +57,12 @@ struct r𝔽1d{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
 end
 
 @generated function r𝔽1d(::Type{P},::Type{T}) where T<:Real where P<:Flat{Θpix, nside}  where {Θpix, nside}
-    Δx     = deg2rad(Θpix/60)
+    Δx     = Θpix
     period = Δx*nside
-    Δk     = 2π/period
+    Δk     = 1/period
     Ωk     = Δk
     Ωpix   = Δx
-    nyq    = 2π / (2Δx)
+    nyq    = 1 / (2Δx)
     k_side = ifftshift(-nside÷2:(nside-1)÷2) * Δk
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = k_side[1:nside÷2+1]
