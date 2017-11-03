@@ -73,7 +73,7 @@ struct AFr𝔽{P<:Flat,T<:Real} <: HarmonicTransform{P,T}
     Δx::T
     Δk::T
     Ωk::T
-    Ωpix::T
+    Ωx::T
     period::T
     nyq::T
     k::Vector{AFArray{T,2}}
@@ -88,18 +88,18 @@ end
     period = Δx*nside
     Δk     = 2π/period
     Ωk     = Δk^2
-    Ωpix   = Δx^2
+    Ωx     = Δx^2
     nyq    = 2π / (2Δx)
     k_side = ifftshift(-nside÷2:(nside-1)÷2) * Δk
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = [AFArray(T.(reshape(k_side, 1, nside))), AFArray(T.(reshape(k_side[1:nside÷2+1], nside÷2+1, 1)))]
     x      = [AFArray(T.(reshape(x_side, 1, nside))), AFArray(T.(reshape(x_side, nside, 1)))]
     ϕk     = AFArray(T.( atan2.(Array(k[2]), Array(k[1]) )))
-    AFr𝔽{P,T}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk))
+    AFr𝔽{P,T}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk))
 end
 
-(*)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T(g.Ωpix / (2π)) * rfft(x)
-(\)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T((2π) / g.Ωpix) * irfft(x)
+(*)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T(g.Ωx / (2π)) * rfft(x)
+(\)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T((2π) / g.Ωx) * irfft(x)
 
 function harmonic_transform(::Type{F}) where F<:AFS0Field{P,T} where {P<:Flat, T<:Real}
     return AFr𝔽(P,T)
@@ -200,7 +200,7 @@ t1 = AFTmap{Px,Tx}(t1x)
 t2 = AFTmap{Px,Tx}(t2x)
 
 @test dot(t1, t2) == dot(t2, t1)
-@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽(Px,Tx).Ωpix
+@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽(Px,Tx).Ωx
 @test dot(t1, t1) > 0
 
 @inferred dot(t1, t2)

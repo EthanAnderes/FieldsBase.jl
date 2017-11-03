@@ -46,7 +46,7 @@ struct r𝔽1d{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
     Δx::T
     Δk::T
     Ωk::T
-    Ωpix::T
+    Ωx::T
     period::T
     nyq::T
     k::Vector{T}
@@ -59,15 +59,15 @@ end
     period = Δx*nside
     Δk     = 2π/period
     Ωk     = Δk
-    Ωpix   = Δx
+    Ωx     = Δx
     nyq    = 2π / (2Δx)
     k_side = ifftshift(-nside÷2:(nside-1)÷2) * Δk
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = k_side[1:nside÷2+1]
     x      = x_side
     dm     = 1 #<-- dimension
-    FFT    =  (Ωpix * ((2π) ^ (-dm/2))) * plan_rfft(rand(T,nside))
-    r𝔽1d{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωpix, period, nyq, k, x, FFT)
+    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(rand(T,nside))
+    r𝔽1d{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
 end
 
 (*)(g::r𝔽1d{P,T}, x) where {P<:Pix,T} = g.FFT * x
@@ -78,7 +78,7 @@ function harmonic_transform(::Type{F}) where F<:MyField{P,T} where {P<:Flat, T<:
 end
 
 function white_noise(g::r𝔽1d{P,T}) where {T,P<:Flat{θ,n}} where {θ,n}
-    randn(T,n) ./ sqrt(g.Ωpix)
+    randn(T,n) ./ sqrt(g.Ωx)
 end
 
 # dot(fourier, fourier)
@@ -154,7 +154,7 @@ t1 = Tmap{P,T}(t1x)
 t2 = Tmap{P,T}(t2x)
 
 @test dot(t1, t2) == dot(t2, t1)
-@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽1d(P,T).Ωpix
+@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽1d(P,T).Ωx
 @test dot(t1, t1) > 0
 
 @inferred dot(t1, t2)

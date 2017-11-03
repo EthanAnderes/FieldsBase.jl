@@ -33,7 +33,7 @@ dot(a::X, b::X) where X<:Field{P} where P<:Flat = _dot(a, b, is_map(X))
 # dot(map, map)
 function _dot(a::X, b::X, ::Type{IsMap{true}}) where X<:Field{P} where P<:Flat
     FFT = harmonic_transform(X)
-    return sum(map(_realdot, data(a),data(b))) * FFT.Ωpix
+    return sum(map(_realdot, data(a),data(b))) * FFT.Ωx
 end
 
 # dot(fourier, fourier)

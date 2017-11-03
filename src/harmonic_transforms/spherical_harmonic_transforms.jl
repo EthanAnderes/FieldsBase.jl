@@ -5,7 +5,7 @@
 #############################################
 # real transform
  struct rℍ{P<:Healpix,T<:Real} <: HarmonicTransform{P,T}
-    Ωpix::T
+    Ωx::T
     lmax::T
     l::Matrix{T}
     m::Matrix{T}

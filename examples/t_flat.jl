@@ -98,7 +98,7 @@ t1 = Tmap{Px,Tx}(t1x)
 t2 = Tmap{Px,Tx}(t2x)
 
 @test dot(t1, t2) == dot(t2, t1)
-@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽(Px,Tx).Ωpix
+@test dot(t1, t2) == sum(t1x.*t2x)*r𝔽(Px,Tx).Ωx
 @test dot(t1, t1) > 0
 
 @inferred dot(t1, t2)

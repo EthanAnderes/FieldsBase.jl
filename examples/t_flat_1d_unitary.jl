@@ -1,4 +1,8 @@
 
+# TODO: test on a masked prediction problem
+# TODO: try using some random points far from the window.
+# TODO: do a 2-d CMB example
+
 using PyPlot 
 include("/Users/ethananderes/Dropbox/FieldsBase/templates/t_flat_1dimension_unitary.jl")
 
@@ -24,13 +28,17 @@ function normalize_Λ(Λk,nside,dm)
 end
 
 
-ρ = 0.05 * g.period
-ν = 1.4
+ρ = 0.15 * g.period
+ν = 0.8
 
 # -------- spectral densities ------
 Maternk     = normalize_Λ(( 4ν/ρ^2 + abs2.(g.k) ) .^ (- ν - dm/2), nside, dm)
 Triangk     = normalize_Λ(real.(g * map(x->trang(x,ρ), g.x)), nside, dm)
 # plot( (1/nside^(dm/2)) * ( g \ Maternk)) # this is the auto-cov function
+
+# Whitek      = 0.1 .* normalize_Λ(1 .+ 0.*abs2.(g.k), nside, dm) # 1 % noise
+# Maternk    += Whitek
+# Triangk    += Whitek
 
 # ------ cov operators 
 Σν = Maternk  |> Ffourier{P,T} |> 𝕃
@@ -38,6 +46,7 @@ Triangk     = normalize_Λ(real.(g * map(x->trang(x,ρ), g.x)), nside, dm)
 #= plot 
 t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
 plot((Σν * t_impls)[:fx])
+plot((Σν * t_impls)[:fx],".")
 =#
 
 #  ------ log operators ------ 
@@ -54,8 +63,8 @@ sqrtΣt = sqrt.(Triangk)  |> Ffourier{P,T} |> 𝕃
 sim_ν = sqrtΣν * Fmap{P,T}(white_noise(g))
 sim_t = sqrtΣt * Fmap{P,T}(white_noise(g))
 #=
-plot(sim_ν[:fx][1:1000])
-plot(sim_t[:fx][1:1000])
+plot(sim_ν[:fx][:])
+plot(sim_t[:fx][:])
 =#
 
 ########################################
@@ -156,17 +165,17 @@ plot(logΣν_col - splogΣν[:,ind])
 ########################################
 
 # ----- edge 
-t_impls  = (t=zeros(T,nside); t[2000:2000+5*sprs_sz] = 1; t) |> Fmap{P,T}
-test_ν   = deepcopy(t_impls)
-data_spν = deepcopy(t_impls)[:fx] 
-test_t   = deepcopy(t_impls)
-data_spt = deepcopy(t_impls)[:fx] 
+# t_impls  = (t=zeros(T,nside); t[2000:2000+5*sprs_sz] = 1; t) |> Fmap{P,T}
+# test_ν   = deepcopy(t_impls)
+# data_spν = deepcopy(t_impls)[:fx] 
+# test_t   = deepcopy(t_impls)
+# data_spt = deepcopy(t_impls)[:fx] 
 # --- ipulse
-# t_impls    = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
-# test_ν     = deepcopy(t_impls)
-# data_spν   = deepcopy(t_impls)[:fx] 
-# test_t     = deepcopy(t_impls)
-# data_spt   = deepcopy(t_impls)[:fx] 
+t_impls    = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
+test_ν     = deepcopy(t_impls)
+data_spν   = deepcopy(t_impls)[:fx] 
+test_t     = deepcopy(t_impls)
+data_spt   = deepcopy(t_impls)[:fx] 
 
 nsteps     = 1000; ϵ = 1/1000
 for n      = 0:nsteps-1
@@ -234,10 +243,13 @@ plot(data_spt)
 
 figure()
 subplot(2,1,1)
-plot(data_ν)
+plot(data_ν[1000-40:1000+40])
+xticks([])
+title(L"$M^{-1}$ * (impulse response)")
 subplot(2,1,2)
-plot(data_spν)
-
+plot(data_spν[1000-40:1000+40])
+xticks([])
+title(L"$[I - n^{-1} splogM ]^n$ * (impulse response)")
 
 #= 
 semilogy(data_ν .|> abs)

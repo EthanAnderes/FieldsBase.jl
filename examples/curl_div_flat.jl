@@ -159,7 +159,7 @@ r1, r2, r3, r4 = randn(T,nside, nside), randn(T,nside, nside), randn(T,nside, ns
 p1, p2 = Vmap{P,T}(r1, r2), Vmap{P,T}(r3, r4)
 
 @test dot(p1, p2) == dot(p2, p1)
-@test dot(p1, p2) == (sum(r1.*r3) + sum(r2.*r4))*r𝔽(P,T).Ωpix
+@test dot(p1, p2) == (sum(r1.*r3) + sum(r2.*r4))*r𝔽(P,T).Ωx
 @test dot(p1, p1) > 0
 
 @inferred dot(p1, p2)
