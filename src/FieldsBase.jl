@@ -13,37 +13,37 @@ abstract type Pix end
 abstract type Flat{Θpix,nside} <: Pix end
 abstract type Healpix{nside}   <: Pix end
 abstract type HarmonicTransform{P<:Pix, T<:Real} end
+
 # abstract field types
 abstract type Spin end
 abstract type S0 <: Spin end
 abstract type S2 <: Spin end
 abstract type S02 <: Spin end
 abstract type Field{P<:Pix, T<:Real, S<:Spin} end 
+
 # exported abstract types
 export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 
-
+# traits used for convert and promote
 include("convert_promote.jl")
 export harmonic_transform, HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis 
 
-
-include("harmonic_transforms/real_2d_flat_fourier.jl")
-export r𝔽
-
-include("harmonic_transforms/spherical_harmonic_transforms.jl")
-export rℍ
-
+# Harmonic transforms
 include("harmonic_transforms/complex_2d_flat_fourier.jl")
 include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_2d_flat_unitary_fourier.jl")
+include("harmonic_transforms/spherical_harmonic_transforms.jl")
+include("harmonic_transforms/real_2d_flat_fourier.jl")
+export r𝔽, rℍ
 
+# field operations
 include("field_ops.jl")
 
+# linear ops
 include("linear_ops.jl")
 export LinOp, DiagOp, 𝕃
 
-#TODO include("lense_transforms.jl")
-
+# misc 
 include("util.jl")
 export data, squash, white_noise
 
@@ -53,7 +53,5 @@ export data, squash, white_noise
 #TODO: dot for Pix <: Healpix in field_ops.jl
 #TODO: get a spherical example up and running
 #TODO: can we get rid of the "Method definition overwritten" when overloading harmonic_eb_to_qu, etc...
-#TODO: can we add a basic pixel space lensing algo which is opt-in for users (and works on a GPU).
-#TODO: can we use splatting to get general spin SN fields for N>2
 
 end # end Module
