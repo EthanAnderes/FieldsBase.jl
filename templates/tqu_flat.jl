@@ -39,9 +39,9 @@ is_map(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 # TEBmap
 struct TEBmap{P<:Pix, T<:Real} <: Field{P,T,S02}
-    tx::Matrix{Complex{T}}
-    ex::Matrix{Complex{T}}
-    bx::Matrix{Complex{T}}
+    tx::Matrix{T}
+    ex::Matrix{T}
+    bx::Matrix{T}
     TEBmap{P,T}(tx::Matrix, ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(tx, ex, bx)
 end
 has_qu(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}

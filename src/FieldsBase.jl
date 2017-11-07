@@ -1,5 +1,6 @@
 module FieldsBase
 
+using Reexport
 if VERSION >= v"0.7.0-DEV.1"
     using FFTW: ifftshift, plan_rfft, plan_fft, PATIENT
 else
