@@ -1,4 +1,5 @@
 
+
 # TODO: test on a masked prediction problem
 # TODO: try using some random points far from the window.
 # TODO: do a 2-d CMB example
@@ -28,11 +29,11 @@ function normalize_Λ(Λk,nside,dm)
 end
 
 
-ρ = 0.15 * g.period
-ν = 0.8
+ρ = 0.05 * g.period
+ν = 1.2
 
 # -------- spectral densities ------
-Maternk     = normalize_Λ(( 4ν/ρ^2 + abs2.(g.k) ) .^ (- ν - dm/2), nside, dm)
+Maternk     = normalize_Λ(( 4ν/ρ^2 .+ abs2.(g.k) ) .^ (- ν - dm/2), nside, dm)
 Triangk     = normalize_Λ(real.(g * map(x->trang(x,ρ), g.x)), nside, dm)
 # plot( (1/nside^(dm/2)) * ( g \ Maternk)) # this is the auto-cov function
 
@@ -126,7 +127,7 @@ get_sparse_logΣ = function ()
 	end
 	return splogΣν, splogΣt
 end
-@time splogΣν, splogΣt = get_sparse_logΣ()
+@time splogΣν, splogΣt = get_sparse_logΣ();
 
 
 # ----- plot --
