@@ -5,7 +5,8 @@
 # TODO: do a 2-d CMB example
 
 using PyPlot 
-include("/Users/ethananderes/Dropbox/FieldsBase/templates/t_flat_1dimension_unitary.jl")
+#include("/Users/ethananderes/Dropbox/FieldsBase/templates/t_flat_1dimension_unitary.jl")
+include("/Users/ethananderes/Dropbox/FieldsBase/templates/s_flat_1dimension_unitary.jl")
 
 nside = 2^12
 Θpix  = 1/nside
@@ -42,30 +43,30 @@ Triangk     = normalize_Λ(real.(g * map(x->trang(x,ρ), g.x)), nside, dm)
 # Triangk    += Whitek
 
 # ------ cov operators 
-Σν = Maternk  |> Ffourier{P,T} |> 𝕃
-Σt = Triangk  |> Ffourier{P,T} |> 𝕃
+Σν = Maternk  |> Sfourier{P,T} |> 𝕃
+Σt = Triangk  |> Sfourier{P,T} |> 𝕃
 #= plot 
-t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
-plot((Σν * t_impls)[:fx])
-plot((Σν * t_impls)[:fx],".")
+t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Smap{P,T}
+plot((Σν * t_impls)[:x])
+plot((Σν * t_impls)[:x],".")
 =#
 
 #  ------ log operators ------ 
-logΣν = log.(Maternk)  |> Ffourier{P,T} |> 𝕃
-logΣt = log.(Triangk)  |> Ffourier{P,T} |> 𝕃
+logΣν = log.(Maternk)  |> Sfourier{P,T} |> 𝕃
+logΣt = log.(Triangk)  |> Sfourier{P,T} |> 𝕃
 #= plot 
-t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
-plot((logΣν * t_impls)[:fx])
+t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Smap{P,T}
+plot((logΣν * t_impls)[:x])
 =#
 
 # ----- simulate ------
-sqrtΣν = sqrt.(Maternk)  |> Ffourier{P,T} |> 𝕃 # note: no factor (2π)^(-dm/2)
-sqrtΣt = sqrt.(Triangk)  |> Ffourier{P,T} |> 𝕃
-sim_ν = sqrtΣν * Fmap{P,T}(white_noise(g))
-sim_t = sqrtΣt * Fmap{P,T}(white_noise(g))
+sqrtΣν = sqrt.(Maternk)  |> Sfourier{P,T} |> 𝕃 # note: no factor (2π)^(-dm/2)
+sqrtΣt = sqrt.(Triangk)  |> Sfourier{P,T} |> 𝕃
+sim_ν = sqrtΣν * Smap{P,T}(white_noise(g))
+sim_t = sqrtΣt * Smap{P,T}(white_noise(g))
 #=
-plot(sim_ν[:fx][:])
-plot(sim_t[:fx][:])
+plot(sim_ν[:x][:])
+plot(sim_t[:x][:])
 =#
 
 ########################################
@@ -77,9 +78,9 @@ plot(sim_t[:fx][:])
 # splogΣν = spzeros(nside, nside)
 # splogΣt = spzeros(nside, nside)
 # for ind = 1:nside
-#     t_impls = (t=zeros(T,nside); t[ind] = 1; t) |> Fmap{P,T}
-#     logΣν_col = (logΣν * t_impls)[:fx]
-#     logΣt_col = (logΣt * t_impls)[:fx]
+#     t_impls = (t=zeros(T,nside); t[ind] = 1; t) |> Smap{P,T}
+#     logΣν_col = (logΣν * t_impls)[:x]
+#     logΣt_col = (logΣt * t_impls)[:x]
 #     pν = sortperm(abs2.(logΣν_col), rev=true)
 #     pt = sortperm(abs2.(logΣt_col), rev=true)
 #     tmp_approx_ν = logΣν_col[pν[1:sprs_sz]]
@@ -97,9 +98,9 @@ get_sparse_logΣ = function ()
 	intrir_Σt = zeros(sprs_sz,sprs_sz)
 	mid_pnt = nside÷2
 	for k = 1:sprs_sz
-		t_impls = (t=zeros(T,nside); t[mid_pnt + window[k]] = 1; t) |> Fmap{P,T}
-		intrir_Σν[:,k] =  (Σν * t_impls)[:fx][mid_pnt .+ window]
-		intrir_Σt[:,k] =  (Σt * t_impls)[:fx][mid_pnt .+ window]
+		t_impls = (t=zeros(T,nside); t[mid_pnt + window[k]] = 1; t) |> Smap{P,T}
+		intrir_Σν[:,k] =  (Σν * t_impls)[:x][mid_pnt .+ window]
+		intrir_Σt[:,k] =  (Σt * t_impls)[:x][mid_pnt .+ window]
 	end
 	intrir_logΣν = real.(logm(intrir_Σν))
 	intrir_logΣt = real.(logm(intrir_Σt)) 
@@ -115,9 +116,9 @@ get_sparse_logΣ = function ()
 			bdry_Σν = zeros(sprs_sz, sprs_sz)
 			bdry_Σt = zeros(sprs_sz, sprs_sz)
 			for k = 1:sprs_sz
-				t_impls = (t=zeros(T,nside); t[nearst_ind[k]] = 1; t) |> Fmap{P,T}
-				bdry_Σν[:,k] =  (Σν * t_impls)[:fx][nearst_ind]
-				bdry_Σt[:,k] =  (Σt * t_impls)[:fx][nearst_ind]
+				t_impls = (t=zeros(T,nside); t[nearst_ind[k]] = 1; t) |> Smap{P,T}
+				bdry_Σν[:,k] =  (Σν * t_impls)[:x][nearst_ind]
+				bdry_Σt[:,k] =  (Σt * t_impls)[:x][nearst_ind]
 			end
 			bdry_logΣν = real.(logm(bdry_Σν))
 			bdry_logΣt = real.(logm(bdry_Σt)) 
@@ -133,8 +134,8 @@ end
 # ----- plot --
 #=
 ind = 1000
-t_impls = (t=zeros(T,nside); t[ind] = 1; t) |> Fmap{P,T}
-logΣν_col = (logΣν * t_impls)[:fx] 
+t_impls = (t=zeros(T,nside); t[ind] = 1; t) |> Smap{P,T}
+logΣν_col = (logΣν * t_impls)[:x] 
 plot(splogΣν[:,ind])
 plot(logΣν_col)
 plot(logΣν_col - splogΣν[:,ind])
@@ -166,17 +167,17 @@ plot(logΣν_col - splogΣν[:,ind])
 ########################################
 
 # ----- edge 
-# t_impls  = (t=zeros(T,nside); t[2000:2000+5*sprs_sz] = 1; t) |> Fmap{P,T}
+# t_impls  = (t=zeros(T,nside); t[2000:2000+5*sprs_sz] = 1; t) |> Smap{P,T}
 # test_ν   = deepcopy(t_impls)
-# data_spν = deepcopy(t_impls)[:fx] 
+# data_spν = deepcopy(t_impls)[:x] 
 # test_t   = deepcopy(t_impls)
-# data_spt = deepcopy(t_impls)[:fx] 
+# data_spt = deepcopy(t_impls)[:x] 
 # --- ipulse
-t_impls    = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
+t_impls    = (t=zeros(T,nside); t[1000] = 1; t) |> Smap{P,T}
 test_ν     = deepcopy(t_impls)
-data_spν   = deepcopy(t_impls)[:fx] 
+data_spν   = deepcopy(t_impls)[:x] 
 test_t     = deepcopy(t_impls)
-data_spt   = deepcopy(t_impls)[:fx] 
+data_spt   = deepcopy(t_impls)[:x] 
 
 nsteps     = 1000; ϵ = 1/1000
 for n      = 0:nsteps-1
@@ -187,8 +188,8 @@ for n      = 0:nsteps-1
 end
 data_spt   = data_spt
 data_spν   = data_spν
-data_t     = deepcopy(test_t)[:fx]
-data_ν     = deepcopy(test_ν)[:fx] 
+data_t     = deepcopy(test_t)[:x]
+data_ν     = deepcopy(test_ν)[:x] 
 
 figure()
 subplot(2,1,1)
@@ -212,17 +213,17 @@ plot(data_ν-data_spν)
 ################################################
 
 # ----- edge 
-# t_impls  = (t=zeros(T,nside); t[2000:2000+2*sprs_sz] = 1; t) |> Fmap{P,T}
+# t_impls  = (t=zeros(T,nside); t[2000:2000+2*sprs_sz] = 1; t) |> Smap{P,T}
 # test_ν   = deepcopy(t_impls)
-# data_spν = deepcopy(t_impls)[:fx]
+# data_spν = deepcopy(t_impls)[:x]
 # test_t   = deepcopy(t_impls)
-# data_spt = deepcopy(t_impls)[:fx]
+# data_spt = deepcopy(t_impls)[:x]
 # ----- ipulse
-t_impls  = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
+t_impls  = (t=zeros(T,nside); t[1000] = 1; t) |> Smap{P,T}
 test_ν   = deepcopy(t_impls)
-data_spν = deepcopy(t_impls)[:fx]
+data_spν = deepcopy(t_impls)[:x]
 test_t   = deepcopy(t_impls)
-data_spt = deepcopy(t_impls)[:fx]
+data_spt = deepcopy(t_impls)[:x]
 
 nsteps = 1000; ϵ = 1/1000
 for n = nsteps:-1:1
@@ -233,8 +234,8 @@ for n = nsteps:-1:1
 end
 data_spt = data_spt
 data_spν = data_spν
-data_t   = deepcopy(test_t)[:fx]
-data_ν   = deepcopy(test_ν)[:fx]
+data_t   = deepcopy(test_t)[:x]
+data_ν   = deepcopy(test_ν)[:x]
 
 figure()
 subplot(2,1,1)
@@ -269,8 +270,8 @@ plot(data_ν - data_spν)
 #  likelihood ratio test
 ################################################
 
-data_spν = deepcopy(sim_ν)[:fx] 
-data_spt = deepcopy(sim_t)[:fx]
+data_spν = deepcopy(sim_ν)[:x] 
+data_spt = deepcopy(sim_t)[:x]
 nsteps = 1000; ϵ = 1/1000
 for n = nsteps:-1:1
     data_spt -= ϵ * (splogΣt * data_spt)
@@ -286,14 +287,14 @@ logdet_ν = (2sum(log.(Maternk)) - log.(Maternk)[1] - log.(Maternk)[end])
 logdet_t = (2sum(log.(Triangk)) - log.(Triangk)[1] - log.(Triangk)[end])  
 
 # data term
-spℓℓ_ν = - 0.5 * dot(sim_ν[:fx],  data_spν)
-spℓℓ_t = - 0.5 * dot(sim_t[:fx],  data_spt)
-ℓℓ_ν      = - 0.5 * dot(sim_ν[:fx],  (Σν \ sim_ν)[:fx]) 
-ℓℓ_t      = - 0.5 * dot(sim_t[:fx],  (Σt \ sim_t)[:fx])
+spℓℓ_ν = - 0.5 * dot(sim_ν[:x],  data_spν)
+spℓℓ_t = - 0.5 * dot(sim_t[:x],  data_spt)
+ℓℓ_ν      = - 0.5 * dot(sim_ν[:x],  (Σν \ sim_ν)[:x]) 
+ℓℓ_t      = - 0.5 * dot(sim_t[:x],  (Σt \ sim_t)[:x])
 #=
 plot(data_spν)
-plot((Σν \ sim_ν)[:fx])
-plot(abs.((Σν \ sim_ν)[:fx]) ./ abs.(data_spν))
+plot((Σν \ sim_ν)[:x])
+plot(abs.((Σν \ sim_ν)[:x]) ./ abs.(data_spν))
 =#
 
 # full likelihood
@@ -339,10 +340,10 @@ logPt = - 0.5 * dot(sim_t, Σt \ sim_t) - 0.5 * logdet_t
 # Laplacek ./= sqrt(ave_Δ²k)
 
 #Laplacek = ones(g.k)
-#Δ         = Laplacek |> Ffourier{P,T} |> 𝕃
+#Δ         = Laplacek |> Sfourier{P,T} |> 𝕃
 #= plot 
-t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Fmap{P,T}
-plot((Δ * t_impls)[:fx])
+t_impls = (t=zeros(T,nside); t[1000] = 1; t) |> Smap{P,T}
+plot((Δ * t_impls)[:x])
 =#
 
 
@@ -350,5 +351,5 @@ plot((Δ * t_impls)[:fx])
 # ---- pre-whiten -----
 # Δ²Maternk  = Maternk .* Laplacek .^ 2
 # Δ²Triangk  = Triangk .* Laplacek .^ 2
-# Δ²Σν = Δ²Maternk  |> Ffourier{P,T} |> 𝕃
-# Δ²Σt = Δ²Triangk  |> Ffourier{P,T} |> 𝕃
+# Δ²Σν = Δ²Maternk  |> Sfourier{P,T} |> 𝕃
+# Δ²Σt = Δ²Triangk  |> Sfourier{P,T} |> 𝕃

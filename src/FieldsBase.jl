@@ -1,11 +1,15 @@
 module FieldsBase
 
-using Reexport
-if VERSION >= v"0.7.0-DEV.1"
-    using FFTW: ifftshift, plan_rfft, plan_fft, PATIENT
-else
-    using Base.DFT.FFTW: PATIENT
-end
+#using Reexport
+#using FFTW
+#using FFTW: PATIENT
+# if VERSION >= v"0.7.0-DEV.1"
+#     using FFTW
+#     using FFTW: PATIENT
+#     #using FFTW: ifftshift, plan_rfft, plan_fft, PATIENT
+# else
+#     using Base.DFT.FFTW: PATIENT
+# end
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
 
@@ -35,7 +39,7 @@ include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_2d_flat_unitary_fourier.jl")
 include("harmonic_transforms/spherical_harmonic_transforms.jl")
 include("harmonic_transforms/real_2d_flat_fourier.jl")
-export r𝔽, rℍ
+export r𝔽, r𝕌𝔽1, r𝕌𝔽2, rℍ
 
 # field operations
 include("field_ops.jl")
