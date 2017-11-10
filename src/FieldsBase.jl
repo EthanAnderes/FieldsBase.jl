@@ -1,15 +1,8 @@
+__precompile__()
+
 module FieldsBase
 
-#using Reexport
-#using FFTW
-#using FFTW: PATIENT
-# if VERSION >= v"0.7.0-DEV.1"
-#     using FFTW
-#     using FFTW: PATIENT
-#     #using FFTW: ifftshift, plan_rfft, plan_fft, PATIENT
-# else
-#     using Base.DFT.FFTW: PATIENT
-# end
+using FFTW
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
 
