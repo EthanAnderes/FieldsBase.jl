@@ -1,4 +1,4 @@
-__precompile__()
+#__precompile__() #getting warnings with v0.6 but works fine for v0.7
 
 module FieldsBase
 
@@ -30,9 +30,11 @@ export harmonic_transform, HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_
 include("harmonic_transforms/complex_2d_flat_fourier.jl")
 include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_2d_flat_unitary_fourier.jl")
+include("harmonic_transforms/real_1d_flat_ordinary_fourier.jl")
+include("harmonic_transforms/real_2d_flat_ordinary_fourier.jl")
 include("harmonic_transforms/spherical_harmonic_transforms.jl")
 include("harmonic_transforms/real_2d_flat_fourier.jl")
-export r𝔽, r𝕌𝔽1, r𝕌𝔽2, rℍ
+export r𝔽, r𝕆𝔽1, r𝕆𝔽2, r𝕌𝔽1, r𝕌𝔽2, rℍ
 
 # field operations
 include("field_ops.jl")

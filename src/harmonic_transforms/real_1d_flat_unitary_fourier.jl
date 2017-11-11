@@ -1,5 +1,7 @@
 ############################################
 #  unitary real FFT in 1 dimension
+# fk   = sum_x f(x) exp(-2πik⋅x)/n^(d/2)
+# f(x) = sum_k fk exp(2πik⋅x)/n^(d/2)
 #############################################
 
 
@@ -21,7 +23,7 @@ end
     period = Δx*nside
     Δk     = 1/period
     Ωk     = Δk^dm
-    Ωx   = Δx^dm
+    Ωx     = Δx^dm
     nyq    = 1 / (2Δx)
     k_side = ifftshift(-nside÷2:(nside-1)÷2) * Δk
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
