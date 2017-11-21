@@ -29,7 +29,8 @@ end
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = k_side[1:nside÷2+1]
     x      = x_side
-    FFT    = (1/nside^dm) * plan_rfft(Array{T}(nside); flags=FFTW.PATIENT, timelimit=4)  # unitary normization
+    #FFT    = (1/nside^dm) * plan_rfft(Array{T}(nside); flags=FFTW.PATIENT, timelimit=4)  # unitary normization
+    FFT    = (1/nside^dm) * plan_rfft(Array{T}(nside); flags=FFTW.MEASURE)  # unitary normization
     r𝕆𝔽1{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
 end
 

@@ -1,4 +1,4 @@
-#__precompile__() #getting warnings with v0.6 but works fine for v0.7
+__precompile__() #getting warnings with v0.6 but works fine for v0.7
 
 module FieldsBase
 
