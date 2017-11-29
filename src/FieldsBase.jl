@@ -2,7 +2,12 @@ __precompile__() #getting warnings with v0.6 but works fine for v0.7
 
 module FieldsBase
 
-using FFTW
+if VERSION >= v"0.7.0-DEV.1"
+     using FFTW
+end
+FFTW.set_num_threads(Base.Threads.nthreads())
+BLAS.set_num_threads(Base.Threads.nthreads())
+
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
 

@@ -1,9 +1,4 @@
 
-if VERSION >= v"0.7.0-DEV.1"
-     using FFTW
-end
-FFTW.set_num_threads(6)
-BLAS.set_num_threads(6)
 
 ############################################################
 #  Define the field types and their trait properties
@@ -65,6 +60,7 @@ t2 = Tfourier{Px,Tx}(tk)
 
 t = convert(Tfourier{Px,Tx}, t1)
 @test all(t.tk - g * t1.tx .== 0)
+
 
 @test typeof(convert(Tfourier{Px,Tx}, t1)) == Tfourier{Px,Tx}
 @test typeof(convert(Tfourier{Px,Tx}, t2)) == Tfourier{Px,Tx}

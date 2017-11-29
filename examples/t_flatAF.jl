@@ -28,8 +28,8 @@ b[3] = NaN + im * Inf
 
 a = AFArray(a)
 b = AFArray(b)
-squash(x::T) where {T<:Number}  = isnan(x) ? zero(T) : (x*x < Inf) ? x : zero(T)
-squash.(a)
+ifelse.(isfinite.(a), a, 0)
+ifelse.(isnan.(a), a, 0)
 =#
 
 ############################################################
