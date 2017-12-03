@@ -30,6 +30,9 @@ a = AFArray(a)
 b = AFArray(b)
 ifelse.(isfinite.(a), a, 0)
 ifelse.(isnan.(a), a, 0)
+
+squash(x::T) where T = ifelse(isfinite(x), x, 0)
+squash.(a)
 =#
 
 ############################################################
