@@ -10,6 +10,7 @@ BLAS.set_num_threads(Base.Threads.nthreads())
 
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
+const source_path = Base.source_path()
 
 # abstract grid geometry and the corresponding harmonic transforms
 abstract type Pix end
