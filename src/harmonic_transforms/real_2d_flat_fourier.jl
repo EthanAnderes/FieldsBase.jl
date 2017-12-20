@@ -66,3 +66,6 @@ r𝔽(::Type{P}) where P<:Flat = r𝔽(P,Float64)
 (\)(g::r𝔽{P,T}, x) where P<:Pix where T = g.FFT \ x
 
 
+
+
+
