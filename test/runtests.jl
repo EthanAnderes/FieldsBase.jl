@@ -2,13 +2,12 @@ using FieldsBase
 using Base.Test
 # using Test # for v0.7
 
+FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
 
 ########################################################
 #     test predefined template qu_flat.jl
 ########################################################
-# TODO figure out how to get Pkg.dir("FieldsBase") to point to local directory
-# include(joinpath(Pkg.dir("FieldsBase"), "templates", "qu_flat.jl"))
-include(joinpath("/Users/ethananderes/Dropbox/FieldsBase", "templates", "qu_flat.jl"))
+include(joinpath(FieldsBase_dir,"templates/qu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0
@@ -145,8 +144,7 @@ L10*p4 - L11*p4
 ############################################################
 #  Test predefined template t_flat.jl
 ############################################################
-# include(joinpath(Pkg.dir("FieldsBase"), "templates", "t_flat.jl"))
-include(joinpath("/Users/ethananderes/Dropbox/FieldsBase", "templates", "t_flat.jl"))
+include(joinpath(FieldsBase_dir,"templates/t_flat.jl"))
 
 
 nside  = 512
@@ -245,10 +243,7 @@ L11 = 𝕃(t2)^(-1)
 ############################################################
 #  Test predefined template tqu_flat.jl
 ############################################################
-# include(joinpath(Pkg.dir("FieldsBase"), "templates", "t_flat.jl"))
-include(joinpath("/Users/ethananderes/Dropbox/FieldsBase", "templates", "tqu_flat.jl"))
-
-
+include(joinpath(FieldsBase_dir,"templates/tqu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0

@@ -1,10 +1,7 @@
-#=
-	To load use
-
-	```
-	include(joinpath(Pkg.dir("FieldsBase"), "templates", "qu_flat.jl"))
-	```
-=#
+# To load use:
+#
+# FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
+# include(joinpath(FieldsBase_dir,"templates/qu_flat.jl"))
 
 
 ############################################################
