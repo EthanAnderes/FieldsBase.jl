@@ -18,23 +18,6 @@ struct r𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
     FFT::F
 end
 
-function harmonic_eb_to_qu(ek, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
-    rw, cl = size(ek)
-    qk = Array{Complex{T},2}(rw,cl)
-    uk = Array{Complex{T},2}(rw,cl)
-    @inbounds qk .= .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
-    @inbounds uk .= .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
-    return qk, uk
-end
-function harmonic_qu_to_eb(qk, uk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
-    rw, cl = size(qk)
-    ek = Array{Complex{T},2}(rw,cl)
-    bk = Array{Complex{T},2}(rw,cl)
-    @inbounds ek .= .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
-    @inbounds bk .=    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
-    return ek, bk
-end
-
 
 # real FFT generated function constructor
 @generated function r𝔽(::Type{P},::Type{T}) where T<:Real where P<:Flat{Θpix, nside}  where {Θpix, nside}

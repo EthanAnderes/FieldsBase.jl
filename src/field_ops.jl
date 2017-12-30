@@ -3,15 +3,15 @@
 # basic operations on fields
 ################################################
 
-##### fields with scalars
 
-(+)(f::T, n::Number) where T<:Field = T((data(f) .+ n)...)
-(+)(n::Number, f::T) where T<:Field = T((data(f) .+ n)...)
-(-)(a::T)            where T<:Field = T((.- data(a))...)
-(-)(f::T, n::Number) where T<:Field = T((data(f) .- n)...)
-(-)(n::Number, f::T) where T<:Field = T((n .- data(f))...)
-(*)(f::T, n::Number) where T<:Field = T((n .* data(f))...)
-(*)(n::Number, f::T) where T<:Field = T((n .* data(f))...)
+##### fields with scalars
+(+)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ T(n))...)
+(+)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ T(n))...)
+(-)(a::F)            where F<:Field{P,T} where {P<:Pix,T} = F((.- data(a))...)
+(-)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .- T(n))...)
+(-)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((T(n) .- data(f))...)
+(*)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((T(n) .* data(f))...)
+(*)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((T(n) .* data(f))...)
 
 
 

@@ -1,6 +1,40 @@
 
+
+
+################################################
+# harmonic_transform needs to be set by the user
+##############################################
+
 harmonic_transform(::Type{Any}) = error("define harmonic_transform")
-# this needs to be set by the user....
+
+
+
+################################################
+# defult S2 conversion ... 
+##############################################
+
+# for Flat pixels
+function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+    qk = similar(ek)
+    uk = similar(bk)
+    @inbounds qk .= .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
+    @inbounds uk .= .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
+    return qk, uk
+end
+function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+    ek = similar(qk)
+    bk = similar(qk)
+    @inbounds ek .= .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
+    @inbounds bk .=    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
+    return ek, bk
+end
+
+
+# TODO define this for Healpix  
+# ... 
+
+
+
 
 #############################################
 ##  THTT (Tim Holy Trait Trick)

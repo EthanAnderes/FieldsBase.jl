@@ -3,37 +3,7 @@
 
 using ArrayFire
 
-# Macro for timing that has a syncronization block
-#NOTE: I don't think this is exactly correct
-macro aftime(exp...)
-      exp1 = quote
-          $exp
-          sync(get_device()) #TODO check this is right
-      end |> esc
-      :(@time $exp1)
-end
 
-
-#=  Basic useage for ArrayFire ... how to get squash to work for ArrayFire?
-## I think we need bool ? rtn1 : rtn2 to work for ArrayFire ...
-a = rand(Float32, 100, 100)
-b = rand(Complex{Float32}, 100, 100)
-a[1] = Inf
-a[2] = -Inf
-a[3] = NaN
-
-b[1] = Inf + im * 0
-b[2] = 0 + im * Inf
-b[3] = NaN + im * Inf
-
-a = AFArray(a)
-b = AFArray(b)
-ifelse.(isfinite.(a), a, 0)
-ifelse.(isnan.(a), a, 0)
-
-squash(x::T) where T = ifelse(isfinite(x), x, 0)
-squash.(a)
-=#
 
 ############################################################
 #  Define the field types and their trait properties
@@ -65,12 +35,17 @@ is_map(::Type{AFTfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 const AFS0Field{P,T} = Union{AFTfourier{P,T}, AFTmap{P,T}}
 
 
-############################################################
 #  Specify the harmonic transform
-############################################################
+function harmonic_transform(::Type{F}) where F<:AFS0Field{P,T} where {P<:Flat, T<:Real}
+    return AFr𝔽(P,T)
+end
 
-import Base: *, \, +, -, ^
 
+
+###########################
+# need to define specialized ArrayFire FFT
+###########################
+#  Specify the harmonic transform
 #  ArrayFire FFT
 struct AFr𝔽{P<:Flat,T<:Real} <: HarmonicTransform{P,T}
     Δx::T
@@ -101,32 +76,9 @@ end
     AFr𝔽{P,T}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk))
 end
 
-(*)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T(g.Ωx / (2π)) * rfft(x)
-(\)(g::AFr𝔽{P,T}, x) where {P<:Pix,T} = T((2π) / g.Ωx) * irfft(x)
-
-function harmonic_transform(::Type{F}) where F<:AFS0Field{P,T} where {P<:Flat, T<:Real}
-    return AFr𝔽(P,T)
-end
-
-#= -------------------------------------
-The following additional definitions are not usually needed, but in this case
-ArrayFire is too eager to promote AFArray{Float32} to AFArray{Float64}:
-  e.g. 1.0 .* AFArray{Float32} = AFArray{Float64}
-  e.g. AFArray{Float32}.^(5.0) = AFArray{Float64}
-=# #-------------------------------
-
-(+)(f::F, n::Number) where F<:AFS0Field{P,T} where {P,T<:Real} = F((data(f) .+ T(n))...)
-(+)(n::Number, f::F) where F<:AFS0Field{P,T} where {P,T<:Real} = F((data(f) .+ T(n))...)
-(-)(a::F)            where F<:AFS0Field{P,T} where {P,T<:Real} = F((.- data(a))...)
-(-)(f::F, n::Number) where F<:AFS0Field{P,T} where {P,T<:Real} = F((data(f) .- T(n))...)
-(-)(n::Number, f::F) where F<:AFS0Field{P,T} where {P,T<:Real} = F((T(n) .- data(f))...)
-(*)(f::F, n::Number) where F<:AFS0Field{P,T} where {P,T<:Real} = F((T(n) .* data(f))...)
-(*)(n::Number, f::F) where F<:AFS0Field{P,T} where {P,T<:Real} = F((T(n) .* data(f))...)
-(^)(op::𝕃{F}, a::Number)  where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
-(^)(op::𝕃{F}, a::Integer) where F<:AFS0Field{P,T} where {P,T<:Real} = 𝕃(F((i.^T(a) for i in data(op.f))...))
-
-
-# TODO: figure out how to overload _dot so it works for ArrayFire
+import Base: *, \
+(*)(g::AFr𝔽{P,T}, x) where {P<:Flat,T} = rfft2(x, T(g.Ωx/2/π))
+(\)(g::AFr𝔽{P,T}, x) where {P<:Flat{θ,n},T} where {θ,n} = irfft2(x, T(2*π/g.Ωx/n^2))
 
 
 
@@ -160,7 +112,6 @@ t2 = AFTfourier{Px,Tx}(tk)
 
 2 * t1 - 5 * t1
 2 * t1 - Tx(5.0) * t1
-@aftime 2 * t1 - 5.0 * t2 #NOTE not sure this is syncronizing correctly
 @time sync((2 * t1 - 5.0 * t2).tk)
 function foo(t1, t2)
     a = 2 * t1 - 5 * t2
@@ -221,7 +172,6 @@ dot(t, t)/nside^2 # this should be near 1.0
 dot(AFTfourier{Px,Tx}(t), AFTfourier{Px,Tx}(t))/nside^2 # this should be near nside^2
 
 
-#NOTE dot has problems ... since vecdot isn't implimented in ArrayFire yet ....
 
 t1 = AFTmap{Px,Tx}(tx)
 t2 = AFTfourier{Px,Tx}(tk)
@@ -240,10 +190,10 @@ L5 = 𝕃(t1)^(1)
 L6 = 𝕃(t2)^(0)
 L7 = 𝕃(t1)^(-1)
 L8 = 𝕃(t2)^(1.5)
-L9 = inv(𝕃(t1)) #<---- #NOTE error here because of squash
-L10 = inv(𝕃(t2)) #<----#NOTE error here because of squash
+L9 = inv(𝕃(t1)) 
+L10 = inv(𝕃(t2))
 L11 = 𝕃(t2)^(-1)
-#NOTE squash needs to be defined for array fire..
+
 
 @inferred L1*t1
 @inferred L2*t1
@@ -256,3 +206,90 @@ L11 = 𝕃(t2)^(-1)
 @inferred L9*t2 - L7*t2
 @inferred L9*t1 - L7*t1
 @inferred L10*t1 - L11*t1
+
+
+
+
+
+#=  Basic useage for ArrayFire ... how to get squash to work for ArrayFire?
+## I think we need bool ? rtn1 : rtn2 to work for ArrayFire ...
+a = rand(Float32, 100, 100)
+b = rand(Complex{Float32}, 100, 100)
+a[1] = Inf
+a[2] = -Inf
+a[3] = NaN
+
+b[1] = Inf + im * 0
+b[2] = 0 + im * Inf
+b[3] = NaN + im * Inf
+
+
+squash(x::T) where T = ifelse(isfinite(x), x, 0)
+squash1(x) = ifelse(isfinite(x), x, eltype(x)(0))
+squash2(x::T) where T = ifelse(isfinite(x), x, T(0))
+squash3(x::T) where T = ifelse(isfinite(x), x, zero(T))
+
+squash1.(a)
+squash1.(b)
+ifelse.(isfinite.(b), b, 0)
+
+foo(x) = squash.(x)
+foo1(x) = squash1.(x)
+foo2(x) = squash2.(x)
+foo3(x) = squash3.(x)
+
+@code_warntype foo(a)
+@code_warntype foo1(a)
+@code_warntype foo2(a)
+@code_warntype foo3(a)
+
+using BenchmarkTools
+@benchmark foo(b)
+@benchmark foo1(b)
+@benchmark foo2(b)
+@benchmark foo3(b)
+
+
+a   = rand(Float32, 1_000, 1_000)
+b   = rand(Float32, 1_000, 1_000)
+c   = rand(Float32, 1_000, 1_000)
+aAF = AFArray(a)
+bAF = AFArray(b)
+cAF = AFArray(c)
+
+
+ak   = rfft(a)  
+akAF = rfft2(aAF)
+ak - Array(akAF)
+
+iak   = irfft(ak, 1_000)
+iak - a
+
+iakAF = irfft2(akAF, 1/length(a))
+iakAF - aAF
+
+plan_rfft(a)
+A_mult_B!()
+
+
+using ArrayFire 
+a = AFArray(rand(Float32, 1_000, 1_000))
+
+test1 = rfft2(a, Float32(1/2/π))
+a1    = irfft2(test1, Float32(2*π)/length(a)) 
+a1 - a
+
+
+
+test1 = rfft(a)
+a1 = irfft(test1) 
+a1 - a
+
+
+test1 = fft(a)
+a1 = ifft(test1)
+a1-a
+
+
+
+=#
