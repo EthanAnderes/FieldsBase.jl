@@ -19,9 +19,9 @@ const 𝕃 = DiagOp
 (^)(op::𝕃{F}, a::Integer) where F<:Field{P,T} where {P<:Pix,T} = 𝕃(F((i.^T(a) for i in data(op.f))...))
 
 # inv(𝕃), includes a pre-squash
-# inv(op::𝕃{F}) where F<:Field{P,T} where {P<:Pix,T} = 𝕃(F( (squash.(T(1) ./ i) for i in data(op.f))... ))
-# the above method has problems with ArrayFire
-function inv(op::𝕃{F}) where F<:Field{P,T} where {P<:Pix,T}
-    df = (T(1)./i for i in data(op.f))
-    return 𝕃(F( (ifelse.(isnan.(j), j, T(0)) for j in df)...))
-end
+inv(op::𝕃{F}) where F<:Field{P,T} where {P<:Pix,T} = 𝕃(F( (squash.(T(1) ./ i) for i in data(op.f))... ))
+# # the above method has problems with ArrayFire
+# function inv(op::𝕃{F}) where F<:Field{P,T} where {P<:Pix,T}
+#     df = (T(1)./i for i in data(op.f))
+#     return 𝕃(F( (ifelse.(isnan.(j), j, T(0)) for j in df)...))
+# end
