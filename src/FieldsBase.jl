@@ -54,10 +54,7 @@ include("util.jl")
 export data, squash, white_noise
 
 
-#TODO: add precompile
-#TODO: code up squash that can be computed directly on the GPU.
 #TODO: dot for Pix <: Healpix in field_ops.jl
 #TODO: get a spherical example up and running
-#TODO: can we get rid of the "Method definition overwritten" when overloading harmonic_eb_to_qu, etc...
 
 end # end Module
