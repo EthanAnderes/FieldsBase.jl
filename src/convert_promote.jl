@@ -10,28 +10,33 @@ harmonic_transform(::Type{Any}) = error("define harmonic_transform")
 
 
 ################################################
-# defult S2 conversion ... 
+# defult S2 conversion ...
 ##############################################
 
 # for Flat pixels
 function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
     qk = similar(ek)
     uk = similar(bk)
-    @inbounds qk .= .- ek .* g.cos2ϕk .+ bk .* g.sin2ϕk
-    @inbounds uk .= .- ek .* g.sin2ϕk .- bk .* g.cos2ϕk
+    @fastmath @inbounds @simd for i in eachindex(qk, uk)
+        qk[i] = ek[i] * g.cos2ϕk[i] - bk[i] * g.sin2ϕk[i]
+        uk[i] = ek[i] * g.sin2ϕk[i] + bk[i] * g.cos2ϕk[i]
+    end
     return qk, uk
 end
 function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
     ek = similar(qk)
     bk = similar(qk)
-    @inbounds ek .= .- qk .* g.cos2ϕk .- uk .* g.sin2ϕk
-    @inbounds bk .=    qk .* g.sin2ϕk .- uk .* g.cos2ϕk
+    @fastmath @inbounds @simd for i in eachindex(ek, bk)
+        ek[i] =   qk[i] * g.cos2ϕk[i] + uk[i] * g.sin2ϕk[i]
+        bk[i] = - qk[i] * g.sin2ϕk[i] + uk[i] * g.cos2ϕk[i]
+    end
     return ek, bk
 end
 
 
-# TODO define this for Healpix  
-# ... 
+
+# TODO define this for Healpix
+# ...
 
 
 

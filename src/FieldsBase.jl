@@ -5,8 +5,10 @@ module FieldsBase
 if VERSION >= v"0.7.0-DEV.1"
      using FFTW
 end
-FFTW.set_num_threads(Base.Threads.nthreads())
-BLAS.set_num_threads(Base.Threads.nthreads())
+FFTW.set_num_threads(Sys.CPU_CORES)
+#BLAS.set_num_threads(Sys.CPU_CORES)
+#FFTW.set_num_threads(Base.Threads.nthreads())
+#BLAS.set_num_threads(Base.Threads.nthreads())
 
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 
@@ -23,14 +25,14 @@ abstract type Spin end
 abstract type S0 <: Spin end
 abstract type S2 <: Spin end
 abstract type S02 <: Spin end
-abstract type Field{P<:Pix, T<:Real, S<:Spin} end 
+abstract type Field{P<:Pix, T<:Real, S<:Spin} end
 
 # exported abstract types
 export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
 
 # traits used for convert and promote
 include("convert_promote.jl")
-export harmonic_transform, HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis 
+export harmonic_transform, HasQU, has_qu, IsMap, is_map, IsLenseBasis, is_lense_basis
 
 # Harmonic transforms
 include("harmonic_transforms/real_2d_flat_fourier.jl")
@@ -50,7 +52,7 @@ include("field_ops.jl")
 include("linear_ops.jl")
 export LinOp, DiagOp, 𝕃
 
-# misc 
+# misc
 include("util.jl")
 export data, squash, white_noise
 
