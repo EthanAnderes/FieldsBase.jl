@@ -17,7 +17,7 @@ harmonic_transform(::Type{Any}) = error("define harmonic_transform")
 function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
     qk = similar(ek)
     uk = similar(bk)
-    @fastmath @inbounds @simd for i in eachindex(qk, uk)
+    @inbounds @simd for i in eachindex(qk, uk)
         qk[i] = ek[i] * g.cos2ϕk[i] - bk[i] * g.sin2ϕk[i]
         uk[i] = ek[i] * g.sin2ϕk[i] + bk[i] * g.cos2ϕk[i]
     end
@@ -26,7 +26,7 @@ end
 function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
     ek = similar(qk)
     bk = similar(qk)
-    @fastmath @inbounds @simd for i in eachindex(ek, bk)
+    @inbounds @simd for i in eachindex(ek, bk)
         ek[i] =   qk[i] * g.cos2ϕk[i] + uk[i] * g.sin2ϕk[i]
         bk[i] = - qk[i] * g.sin2ϕk[i] + uk[i] * g.cos2ϕk[i]
     end
