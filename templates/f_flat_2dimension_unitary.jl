@@ -31,7 +31,14 @@ end
 has_qu(::Type{Ffourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Ffourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+
 const FField{P,T} = Union{Ffourier{P,T}, Fmap{P,T}}
+
+
+# This is needed for 0.7 since constructors do not fall back on convert
+Fmap{P,T}(f::FField{P,T})     where {P<:Flat,T<:Real} = convert(Fmap{P,T}, f) 
+Ffourier{P,T}(f::FField{P,T}) where {P<:Flat,T<:Real} = convert(Ffourier{P,T}, f) 
+
 
 
 ############################################################

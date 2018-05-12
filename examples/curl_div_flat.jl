@@ -54,7 +54,17 @@ end
 has_qu(::Type{Hfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{Hfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+
 const MyField{P,T} = Union{Vfourier{P,T}, Vmap{P,T}, Hfourier{P,T}, Hmap{P,T}}
+
+# This is needed for 0.7 since constructors do not fall back on convert
+Vmap{P,T}(f::MyField{P,T})     where {P<:Flat,T<:Real} = convert(Vmap{P,T}, f)
+Vfourier{P,T}(f::MyField{P,T}) where {P<:Flat,T<:Real} = convert(Vfourier{P,T}, f)
+Hmap{P,T}(f::MyField{P,T})     where {P<:Flat,T<:Real} = convert(Hmap{P,T}, f)
+Hfourier{P,T}(f::MyField{P,T}) where {P<:Flat,T<:Real} = convert(Hfourier{P,T}, f)
+
+
+
 
 ############################################################
 #  Specify the harmonic transform

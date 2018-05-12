@@ -32,7 +32,14 @@ end
 has_qu(::Type{Sfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Sfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+
 const SField{P,T} = Union{Sfourier{P,T}, Smap{P,T}}
+
+
+# This is needed for 0.7 since constructors do not fall back on convert
+Smap{P,T}(s::SField{P,T})     where {P<:Flat,T<:Real} = convert(Smap{P,T}, s) 
+Sfourier{P,T}(s::SField{P,T}) where {P<:Flat,T<:Real} = convert(Sfourier{P,T}, s) 
+
 
 
 ############################################################
@@ -81,7 +88,6 @@ end
 
 import Base: getindex
 
-# NOTE: these are not type stable
 function getindex(f::SField{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
     (sym == :k)  ? Sfourier{P,T}(f).sk :
     (sym == :x)  ? Smap{P,T}(f).sx :

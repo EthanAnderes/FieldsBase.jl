@@ -47,7 +47,16 @@ end
 has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+
 const MyField{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
+
+# This is needed for 0.7 since constructors do not fall back on convert
+QUmap{P,T}(p::S2Field{P,T})     where {P<:Flat,T<:Real} = convert(QUmap{P,T}, p)
+QUfourier{P,T}(p::S2Field{P,T}) where {P<:Flat,T<:Real} = convert(QUfourier{P,T}, p)
+EBmap{P,T}(p::S2Field{P,T})     where {P<:Flat,T<:Real} = convert(EBmap{P,T}, p)
+EBfourier{P,T}(p::S2Field{P,T}) where {P<:Flat,T<:Real} = convert(EBfourier{P,T}, p)
+
+
 
 ############################################################
 #  Specify the harmonic transform

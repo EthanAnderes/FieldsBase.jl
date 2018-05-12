@@ -55,7 +55,18 @@ end
 has_qu(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
+
 const S02Field{P,T} = Union{TEBfourier{P,T}, TEBmap{P,T}, TQUmap{P,T}, TQUfourier{P,T}}
+
+
+# This is needed for 0.7 since constructors do not fall back on convert
+TQUmap{P,T}(tp::S02Field{P,T})     where {P<:Flat,T<:Real} = convert(TQUmap{P,T}, tp) 
+TQUfourier{P,T}(tp::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TQUfourier{P,T}, tp) 
+TEBmap{P,T}(tp::S02Field{P,T})     where {P<:Flat,T<:Real} = convert(TEBmap{P,T}, tp) 
+TEBfourier{P,T}(tp::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TEBfourier{P,T}, tp) 
+
+
+
 
 ############################################################
 #  Specify the harmonic transform

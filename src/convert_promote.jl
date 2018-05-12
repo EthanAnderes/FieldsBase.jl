@@ -65,8 +65,9 @@ is_lense_basis(::Type{X}) where X = error("no definition of is_lense_basis") # -
 ## Convert and Promote using Traits
 #############################################
 
-convert(::Type{X}, f::X) where X<:Field = X((d for d in data(f))...)
-convert(::Type{X}, f::Y) where {X<:Field, Y<:Field} = _convert(X, has_qu(X), is_map(X), f, has_qu(Y), is_map(Y))
+# convert(::Type{X}, f::X) where X<:Field = X((d for d in data(f))...)
+convert(::Type{X}, f::X) where X<:Field = f::X
+convert(::Type{X}, f::Y) where {X<:Field, Y<:Field} = _convert(X, has_qu(X), is_map(X), f, has_qu(Y), is_map(Y))::X
 
 # convert(Xfourier,  f::Xmap)  for X ∈ {T, QU, EB, TQU, TEB}
 function _convert(::Type{X}, ::Type{T}, ::Type{IsMap{false}}, f::Y, ::Type{T}, ::Type{IsMap{true}}) where {T<:HasQU, X<:Field{P},Y<:Field{P}} where P<:Pix
