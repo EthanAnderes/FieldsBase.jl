@@ -38,6 +38,10 @@ is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 const S02Field{P,T} = Union{TEBfourier{P,T}, TQUmap{P,T}}
 
+TQUmap{P,T}(t::S02Field{P,T})     where {P<:Flat,T<:Real} = convert(TQUmap{P,T}, t) 
+TEBfourier{P,T}(t::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TEBfourier{P,T}, t) 
+
+
 ############################################################
 #  Specify the harmonic transform
 ############################################################

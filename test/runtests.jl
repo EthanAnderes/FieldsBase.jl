@@ -1,6 +1,11 @@
+
 using FieldsBase
-using Base.Test
-# using Test # for v0.7
+
+if VERSION >= v"0.7.0-DEV.1"
+	using Test 
+else
+	using Base.Test
+end
 
 FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
 

@@ -1,70 +1,11 @@
 
 ############################################################
-#  Define the field types and their trait properties
+#  Define the field types and their trait properties: from template
 ############################################################
 
 using FieldsBase
-import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
-
-
-# QUmap
-struct QUmap{P<:Flat,T<:Real} <: Field{P,T,S2}
-    qx::Matrix{T}
-    ux::Matrix{T}
-    QUmap{P,T}(qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(qx, ux)
-end
-has_qu(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
-is_map(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
-is_lense_basis(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
-
-
-# QUfourier
-struct QUfourier{P<:Pix,T<:Real} <: Field{P,T,S2}
-    qk::Matrix{Complex{T}}
-    uk::Matrix{Complex{T}}
-    QUfourier{P,T}(qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(qk), complex.(uk))
-end
-has_qu(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
-is_map(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
-
-
-# EBmap
-struct EBmap{P<:Pix, T<:Real} <: Field{P,T,S2}
-    ex::Matrix{T}
-    bx::Matrix{T}
-    EBmap{P,T}(ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(ex, bx)
-end
-has_qu(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
-is_map(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
-
-
-# EBfourier
-struct EBfourier{P<:Pix, T<:Real} <: Field{P,T,S2}
-    ek::Matrix{Complex{T}}
-    bk::Matrix{Complex{T}}
-    EBfourier{P,T}(ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(ek), complex.(bk))
-end
-has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
-is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
-
-
-const MyField{P,T} = Union{EBfourier{P,T}, EBmap{P,T}, QUfourier{P,T}, QUmap{P,T}}
-
-# This is needed for 0.7 since constructors do not fall back on convert
-QUmap{P,T}(p::S2Field{P,T})     where {P<:Flat,T<:Real} = convert(QUmap{P,T}, p)
-QUfourier{P,T}(p::S2Field{P,T}) where {P<:Flat,T<:Real} = convert(QUfourier{P,T}, p)
-EBmap{P,T}(p::S2Field{P,T})     where {P<:Flat,T<:Real} = convert(EBmap{P,T}, p)
-EBfourier{P,T}(p::S2Field{P,T}) where {P<:Flat,T<:Real} = convert(EBfourier{P,T}, p)
-
-
-
-############################################################
-#  Specify the harmonic transform
-############################################################
-
-function harmonic_transform(::Type{F}) where F<:MyField{P,T} where {P<:Flat, T<:Real}
-    return r𝔽(P,T)
-end
+FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
+include(joinpath(FieldsBase_dir,"templates/qu_flat.jl"))
 
 
 ############################################################

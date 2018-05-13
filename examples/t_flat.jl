@@ -5,28 +5,8 @@
 ############################################################
 
 using FieldsBase
-import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
-
-# Tmap
-struct Tmap{Px<:Flat,Tx<:Real} <: Field{Px,Tx,S0}
-    tx::Matrix{Tx}
-    Tmap{Px,Tx}(tx::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(tx)
-end
-has_qu(::Type{Tmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{false}
-is_map(::Type{Tmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{true}
-is_lense_basis(::Type{Tmap{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsLenseBasis{true}
-
-
-# Tfourier
-struct Tfourier{Px<:Pix,Tx<:Real} <: Field{Px,Tx,S0}
-    tk::Matrix{Complex{Tx}}
-    Tfourier{Px,Tx}(tk::Matrix) where {Px<:Flat,Tx<:Real} = new{Px,Tx}(complex.(tk))
-end
-has_qu(::Type{Tfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = HasQU{false}
-is_map(::Type{Tfourier{Px,Tx}}) where {Px<:Flat,Tx<:Real} = IsMap{false}
-
-
-const MyField{Px,Tx} = Union{Tfourier{Px,Tx}, Tmap{Px,Tx}}
+FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
+include(joinpath(FieldsBase_dir,"templates/t_flat.jl"))
 
 
 ############################################################

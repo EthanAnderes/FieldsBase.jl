@@ -1,16 +1,21 @@
-__precompile__() #getting warnings with v0.6 but works fine for v0.7
+__precompile__() 
 
 module FieldsBase
 
 if VERSION >= v"0.7.0-DEV.1"
-     using FFTW
+	using FFTW
+	using LinearAlgebra
+    import LinearAlgebra: dot
+	import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, inv
+	export dot
+else
+	import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
 end
-FFTW.set_num_threads(Sys.CPU_CORES)
-#BLAS.set_num_threads(Sys.CPU_CORES)
-#FFTW.set_num_threads(Base.Threads.nthreads())
-#BLAS.set_num_threads(Base.Threads.nthreads())
 
-import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
+FFTW.set_num_threads(Sys.CPU_CORES)
+# BLAS.set_num_threads(Sys.CPU_CORES)
+# FFTW.set_num_threads(Base.Threads.nthreads())
+# BLAS.set_num_threads(Base.Threads.nthreads())
 
 const source_path = Base.source_path()
 

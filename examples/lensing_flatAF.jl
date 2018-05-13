@@ -101,7 +101,7 @@ const FieldAF{P,T}  = Union{S0FieldAF{P,T}, S2FieldAF{P,T}}
 
 # ----------- This is needed for 0.7 since constructors do not fall back on convert
 TfourierAF{P,T}(t::S0FieldAF{P,T}) where {P<:Flat,T<:Real} = convert(TfourierAF{P,T}, t) 
-TmapAF{P,T}(t::S0FieldAF{P,T}) where {P<:Flat,T<:Real}     = convert(TmapAF{P,T}, t) 
+TmapAF{P,T}(t::S0FieldAF{P,T})     where {P<:Flat,T<:Real} = convert(TmapAF{P,T}, t) 
 QUmapAF{P,T}(p::S2FieldAF{P,T})     where {P<:Flat,T<:Real} = convert(QUmapAF{P,T}, p)
 QUfourierAF{P,T}(p::S2FieldAF{P,T}) where {P<:Flat,T<:Real} = convert(QUfourierAF{P,T}, p)
 EBmapAF{P,T}(p::S2FieldAF{P,T})     where {P<:Flat,T<:Real} = convert(EBmapAF{P,T}, p)
