@@ -14,37 +14,44 @@ harmonic_transform(::Type{Any}) = error("define harmonic_transform")
 ##############################################
 
 # for Flat pixels
-# function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-#     qk = similar(ek)
-#     uk = similar(bk)
-#     @inbounds @simd for i in eachindex(qk, uk)
-#         qk[i] = ek[i] * g.cos2ϕk[i] - bk[i] * g.sin2ϕk[i]
-#         uk[i] = ek[i] * g.sin2ϕk[i] + bk[i] * g.cos2ϕk[i]
-#     end
-#     return qk, uk
-# end
-# function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-#     ek = similar(qk)
-#     bk = similar(qk)
-#     @inbounds @simd for i in eachindex(ek, bk)
-#         ek[i] =   qk[i] * g.cos2ϕk[i] + uk[i] * g.sin2ϕk[i]
-#         bk[i] = - qk[i] * g.sin2ϕk[i] + uk[i] * g.cos2ϕk[i]
-#     end
-#     return ek, bk
-# end
 
-# for some reason the above for loops result in segfaults on v0.7 master
-
-@inbounds function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-    qk = ek .* g.cos2ϕk .- bk .* g.sin2ϕk
-    uk = ek .* g.sin2ϕk .+ bk .* g.cos2ϕk
+function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+    qk = similar(ek)
+    uk = similar(bk)
+    nrow, ncol = size(qk)
+    @simd for j = 1:ncol
+         @inbounds for i = 1:nrow
+            qk[i,j] = ek[i,j] * g.cos2ϕk[i,j] - bk[i,j] * g.sin2ϕk[i,j]
+            uk[i,j] = ek[i,j] * g.sin2ϕk[i,j] + bk[i,j] * g.cos2ϕk[i,j]
+        end
+    end
     return qk, uk
 end
-@inbounds function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-    ek =    qk .* g.cos2ϕk .+ uk .* g.sin2ϕk
-    bk = .- qk .* g.sin2ϕk .+ uk .* g.cos2ϕk
+function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+    ek = similar(qk)
+    bk = similar(qk)
+    nrow, ncol = size(ek)
+    @simd for j = 1:ncol
+         @inbounds for i = 1:nrow
+            ek[i,j] =   qk[i,j] * g.cos2ϕk[i,j] + uk[i,j] * g.sin2ϕk[i,j]
+            bk[i,j] = - qk[i,j] * g.sin2ϕk[i,j] + uk[i,j] * g.cos2ϕk[i,j]
+        end
+    end
     return ek, bk
 end
+
+
+# This also works
+# @inbounds function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+#     qk = ek .* g.cos2ϕk .- bk .* g.sin2ϕk
+#     uk = ek .* g.sin2ϕk .+ bk .* g.cos2ϕk
+#     return qk, uk
+# end
+# @inbounds function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
+#     ek =    qk .* g.cos2ϕk .+ uk .* g.sin2ϕk
+#     bk = .- qk .* g.sin2ϕk .+ uk .* g.cos2ϕk
+#     return ek, bk
+# end
 
 
 

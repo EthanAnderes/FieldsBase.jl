@@ -2,7 +2,7 @@
 using FieldsBase
 
 if VERSION >= v"0.7.0-DEV.1"
-	using Test 
+	using Test
 else
 	using Base.Test
 end
@@ -58,7 +58,6 @@ p = convert(QUfourier{Px,Tx}, p1)
 @inferred 2 * p4 - 5.0 * p2
 @inferred 2 * p4 - 5.0 * p3
 @inferred 2 * p4 - 5.0 * p4
-
 
 
 
@@ -294,3 +293,89 @@ wn1, wn2, wn3 = white_noise(g), white_noise(g), white_noise(g)
 p = TQUmap{P,T}(wn1, wn2, wn3)
 dot(p, p) / 3 / nside^2 # this should be near 1.0
 dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near nside^2
+
+
+
+
+
+#=
+
+using BenchmarkTools
+
+nside  = 512
+Θpix   = 2.0
+Px     = Flat{Θpix,nside}
+Tx     = Float32
+g      = r𝔽(Px,Tx);
+
+qx, ux = rand(Tx, nside, nside), rand(Tx, nside, nside)
+ex, bx = rand(Tx, nside, nside), rand(Tx, nside, nside)
+qk, uk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
+ek, bk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
+
+p1 = QUmap{Px,Tx}(qx, ux)
+p2 = QUfourier{Px,Tx}(qk, uk)
+
+
+# =============
+@benchmark convert($(EBfourier{Px,Tx}), $p2)
+
+# on v0.6.3 with fused loop
+BenchmarkTools.Trial:
+  memory estimate:  4.02 MiB
+  allocs estimate:  10
+  --------------
+  minimum time:     717.703 μs (0.00% GC)
+  median time:      903.073 μs (0.00% GC)
+  mean time:        1.457 ms (11.99% GC)
+  maximum time:     4.295 ms (23.42% GC)
+  --------------
+  samples:          3426
+  evals/sample:     1
+
+
+# on v0.6.3 without fused loop
+BenchmarkTools.Trial:
+  memory estimate:  4.02 MiB
+  allocs estimate:  12
+  --------------
+  minimum time:     1.284 ms (0.00% GC)
+  median time:      1.397 ms (0.00% GC)
+  mean time:        1.950 ms (8.41% GC)
+  maximum time:     4.456 ms (20.11% GC)
+  --------------
+  samples:          2560
+  evals/sample:     1
+
+
+# on v0.7 without fused loop
+BenchmarkTools.Trial:
+  memory estimate:  4.02 MiB
+  allocs estimate:  24
+  --------------
+  minimum time:     798.389 μs (0.00% GC)
+  median time:      975.551 μs (0.00% GC)
+  mean time:        1.523 ms (11.92% GC)
+  maximum time:     42.914 ms (92.72% GC)
+  --------------
+  samples:          3276
+  evals/sample:     1
+
+
+# on v0.7 with fused loop
+julia>   @benchmark convert($(EBfourier{Px,Tx}), $p2)
+BenchmarkTools.Trial: 
+  memory estimate:  4.02 MiB
+  allocs estimate:  9
+  --------------
+  minimum time:     549.295 μs (0.00% GC)
+  median time:      788.903 μs (0.00% GC)
+  mean time:        1.276 ms (14.40% GC)
+  maximum time:     4.904 ms (28.45% GC)
+  --------------
+  samples:          3906
+  evals/sample:     1
+
+
+
+=#
