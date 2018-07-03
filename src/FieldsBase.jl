@@ -2,22 +2,19 @@ __precompile__()
 
 module FieldsBase
 
-if VERSION >= v"0.7.0-DEV.1"
-	using FFTW
-	using LinearAlgebra
-    import LinearAlgebra: dot
-	import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, inv
-	export dot
-else
-	import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, dot, inv
-end
+using  FFTW
+using  LinearAlgebra
+import LinearAlgebra: dot
+import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, inv
+export dot
 
 # FFTW.set_num_threads(Sys.CPU_CORES)
 # BLAS.set_num_threads(Sys.CPU_CORES)
 FFTW.set_num_threads(Base.Threads.nthreads())
-# BLAS.set_num_threads(Base.Threads.nthreads())
+BLAS.set_num_threads(Base.Threads.nthreads())
 
 const source_path = Base.source_path()
+const dir_path    = joinpath(@__DIR__, "..")
 
 # abstract grid geometry and the corresponding harmonic transforms
 abstract type Pix end

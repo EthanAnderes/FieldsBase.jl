@@ -1,24 +1,18 @@
 
 using FieldsBase
+using Test
 
-if VERSION >= v"0.7.0-DEV.1"
-	using Test
-else
-	using Base.Test
-end
-
-FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
 
 ########################################################
 #     test predefined template qu_flat.jl
 ########################################################
-include(joinpath(FieldsBase_dir,"templates/qu_flat.jl"))
+include(joinpath(FieldsBase.dir_path,"templates/qu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0
 Px     = Flat{Θpix,nside}
 Tx     = Float32
-g      =  r𝔽(Px,Tx);
+g      =  r𝔽(Px,Tx)
 
 qx, ux = rand(Tx, nside, nside), rand(Tx, nside, nside)
 ex, bx = rand(Tx, nside, nside), rand(Tx, nside, nside)
@@ -148,7 +142,7 @@ L10*p4 - L11*p4
 ############################################################
 #  Test predefined template t_flat.jl
 ############################################################
-include(joinpath(FieldsBase_dir,"templates/t_flat.jl"))
+include(joinpath(FieldsBase.dir_path,"templates/t_flat.jl"))
 
 
 nside  = 512
@@ -247,7 +241,7 @@ L11 = 𝕃(t2)^(-1)
 ############################################################
 #  Test predefined template tqu_flat.jl
 ############################################################
-include(joinpath(FieldsBase_dir,"templates/tqu_flat.jl"))
+include(joinpath(FieldsBase.dir_path,"templates/tqu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0

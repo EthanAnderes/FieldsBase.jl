@@ -72,7 +72,7 @@ end
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = [AFArray(T.(reshape(k_side, 1, nside))), AFArray(T.(reshape(k_side[1:nside÷2+1], nside÷2+1, 1)))]
     x      = [AFArray(T.(reshape(x_side, 1, nside))), AFArray(T.(reshape(x_side, nside, 1)))]
-    ϕk     = AFArray(T.( atan2.(Array(k[2]), Array(k[1]) )))
+    ϕk     = AFArray(T.( atan.(Array(k[2]), Array(k[1]) )))
     AFr𝔽{P,T}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk))
 end
 
