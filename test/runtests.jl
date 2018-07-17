@@ -1,6 +1,7 @@
 
+using Compat
 using FieldsBase
-using Test
+using Compat.Test
 
 
 ########################################################
