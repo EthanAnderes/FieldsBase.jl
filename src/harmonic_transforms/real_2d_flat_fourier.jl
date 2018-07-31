@@ -31,8 +31,8 @@ end
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = [reshape(k_side, 1, nside), reshape(k_side[1:nside÷2+1], nside÷2+1, 1)]
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
-    ϕk     = atan2.(k[2],k[1])
-    FFT    =  Ωx / (2π) * plan_rfft(Array{T}(nside,nside); flags=FFTW.MEASURE); #flags=FFTW.PATIENT, timelimit=4)
+    ϕk     = atan.(k[2],k[1])
+    FFT    =  Ωx / (2π) * plan_rfft(Array{T}(undef,nside,nside); flags=FFTW.MEASURE); #flags=FFTW.PATIENT, timelimit=4)
     r𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk), FFT)
 end
 
