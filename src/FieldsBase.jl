@@ -1,5 +1,3 @@
-__precompile__() 
-
 module FieldsBase
 
 using  FFTW
@@ -8,13 +6,10 @@ import LinearAlgebra: dot
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, inv
 export dot
 
-# FFTW.set_num_threads(Sys.CPU_CORES)
-# BLAS.set_num_threads(Sys.CPU_CORES)
-FFTW.set_num_threads(Base.Threads.nthreads())
-LinearAlgebra.BLAS.set_num_threads(Base.Threads.nthreads())
+# FFTW.set_num_threads(Base.Threads.nthreads())
+# LinearAlgebra.BLAS.set_num_threads(Base.Threads.nthreads())
 
-const source_path = Base.source_path()
-const dir_path    = joinpath(@__DIR__, "..")
+const module_dir  = joinpath(@__DIR__, "..") |> normpath
 
 # abstract grid geometry and the corresponding harmonic transforms
 abstract type Pix end

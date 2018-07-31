@@ -5,8 +5,9 @@
 # TODO: do a 2-d CMB example
 
 using PyPlot 
-#include("/Users/ethananderes/Dropbox/FieldsBase/templates/t_flat_1dimension_unitary.jl")
-include("/Users/ethananderes/Dropbox/FieldsBase/templates/s_flat_1dimension_unitary.jl")
+using FieldsBase
+include(joinpath(FieldsBase.module_dir,"templates/s_flat_1dimension_unitary.jl"))
+
 
 nside = 2^12
 Θpix  = 1/nside

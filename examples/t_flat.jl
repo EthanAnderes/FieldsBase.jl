@@ -5,8 +5,7 @@
 ############################################################
 
 using FieldsBase
-FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
-include(joinpath(FieldsBase_dir,"templates/t_flat.jl"))
+include(joinpath(FieldsBase.module_dir,"templates/t_flat.jl"))
 
 
 ############################################################

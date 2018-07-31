@@ -6,7 +6,7 @@ using Test
 ########################################################
 #     test predefined template qu_flat.jl
 ########################################################
-include(joinpath(FieldsBase.dir_path,"templates/qu_flat.jl"))
+include(joinpath(FieldsBase.module_dir, "templates/qu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0
@@ -142,7 +142,7 @@ L10*p4 - L11*p4
 ############################################################
 #  Test predefined template t_flat.jl
 ############################################################
-include(joinpath(FieldsBase.dir_path,"templates/t_flat.jl"))
+include(joinpath(FieldsBase.module_dir, "templates/t_flat.jl"))
 
 
 nside  = 512
@@ -241,7 +241,7 @@ L11 = 𝕃(t2)^(-1)
 ############################################################
 #  Test predefined template tqu_flat.jl
 ############################################################
-include(joinpath(FieldsBase.dir_path,"templates/tqu_flat.jl"))
+include(joinpath(FieldsBase.module_dir, "templates/tqu_flat.jl"))
 
 nside  = 512
 Θpix   = 2.0

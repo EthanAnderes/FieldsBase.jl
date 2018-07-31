@@ -1,7 +1,7 @@
 # To load use:
 #
-# FieldsBase_dir = dirname(dirname(FieldsBase.source_path))
-# include(joinpath(FieldsBase_dir,"templates/s_flat_1dimension_unitary.jl"))
+# using FieldsBase
+# include(joinpath(FieldsBase.module_dir,"templates/s_flat_1dimension_unitary.jl"))
 
 
 
