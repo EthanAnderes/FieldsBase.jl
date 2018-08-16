@@ -1,5 +1,6 @@
 name = "FieldsBase"
 uuid = "1aa62ab8-7efd-11e8-1cfd-5b78655e40c1"
+authors = ["ethananderes "]
 version = "0.1.0"
 
 [deps]
