@@ -194,7 +194,7 @@ import Base: *, \
 
 
 
-using Base.Test #... or `using Test` in v0.7
+using Test 
 
 nside  = 1024
 Θpix   = 2.0

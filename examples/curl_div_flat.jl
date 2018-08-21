@@ -3,13 +3,6 @@ In this example (Q,U) represents a regular vector field (not headless)
 and E = div(Q,U), B = curl(Q,U)
 =#
 
-
-# if VERSION >= v"0.7.0-DEV.1"
-#     using FFTW
-# end
-# FFTW.set_num_threads(6)
-# BLAS.set_num_threads(6)
-
 ############################################################
 #  Define the field types and their trait properties
 ############################################################
@@ -86,27 +79,14 @@ function harmonic_eb_to_qu(dk, bk, g::r𝔽{P,T}) where {P<:Pix, T<:Real}
     v2k = invΔk .* ( (im.*g.k[2]) .* dk .- (im.*g.k[1]) .* ck )
     return v1k, v2k
 end
-# NOTE: can we get rid of the "Method definition overwritten"?
-
-# (im*g.k[1]) * dk + (im*g.k[2]) * ck
-# = - v1k * (g.k[1]^2)  - v2k * (g.k[2].*g.k[1])
-#   - v1k * (g.k[2]^2)  + v2k * (g.k[2]*g.k[1])
-# = - 2 v1k .* (g.k[1]^2 + g.k[2]^2)
-#
-# (im*g.k[2]) * dk - (im*g.k[1]) * ck
-# =   - v1k * (g.k[2].*g.k[1])  - v2k * (g.k[2]^2)
-#   -[- v1k * (g.k[2].*g.k[1])  + v2k * (g.k[1]^2) ]
-# = - 2 v2k .* (g.k[1]^2 + g.k[2]^2)
-
-
-
-
 
 
 
 ############################################################
 #  The fields are ready to go ...
 ############################################################
+
+using Test
 
 nside  = 512
 Θpix   = 2.0

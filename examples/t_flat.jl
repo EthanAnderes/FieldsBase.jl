@@ -9,21 +9,11 @@ include(joinpath(FieldsBase.module_dir,"templates/t_flat.jl"))
 
 
 ############################################################
-#  Specify the harmonic transform
-############################################################
-
-function harmonic_transform(::Type{F}) where F<:MyField{Px,Tx} where {Px<:Flat, Tx<:Real}
-    return r𝔽(Px,Tx)
-end
-
-
-############################################################
 #  The fields are ready to go ...
 ############################################################
 
 
-using Base.Test
-# using Test # for v0.7
+using Test 
 
 nside  = 1024
 Θpix   = 2.0

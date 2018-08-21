@@ -1,11 +1,5 @@
 
 
-if VERSION >= v"0.7.0-DEV.1"
-    using FFTW
-end
-FFTW.set_num_threads(6)
-BLAS.set_num_threads(6)
-
 ############################################################
 #  Define the field types and their trait properties
 ############################################################
@@ -79,7 +73,7 @@ p = convert(TQUmap{P,T}, p2)
 
 
 
-using Base.Test
+using Test
 
 @inferred TEBfourier{P,T}(p1)
 @inferred TEBfourier{P,T}(p2)

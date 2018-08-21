@@ -66,7 +66,7 @@ end
     k      = k_side[1:nside÷2+1]
     x      = x_side
     dm     = 1 #<-- dimension
-    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(rand(T,nside))
+    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(Array{T}(undef,nside))
     r𝔽1d{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
 end
 
@@ -106,7 +106,8 @@ end
 #  The fields are ready to go ...
 ############################################################
 
-using Base.Test
+using Test
+
 nside  = 2^12
 Θpix   = 2.0
 P     = Flat{Θpix,nside}

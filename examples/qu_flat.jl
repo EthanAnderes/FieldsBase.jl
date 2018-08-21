@@ -11,6 +11,8 @@ include(joinpath(FieldsBase.module_dir,"templates/qu_flat.jl"))
 #  The fields are ready to go ...
 ############################################################
 
+using Test
+
 nside  = 512
 Θpix   = 2.0
 P     = Flat{Θpix,nside}

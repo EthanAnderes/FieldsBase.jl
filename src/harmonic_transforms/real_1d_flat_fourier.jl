@@ -29,7 +29,7 @@ end
     k      = k_side[1:nside÷2+1]
     x      = x_side
     dm     = 1 #<-- dimension
-    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(Array{T}(nside))
+    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(Array{T}(undef, nside))
     r𝔽1{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
 end
 
