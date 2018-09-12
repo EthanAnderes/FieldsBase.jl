@@ -197,7 +197,7 @@ t2 = Tmap{Px,Tx}(t2x)
 wn1 = white_noise(g)
 t = Tmap{Px,Tx}(wn1)
 dot(t, t)/nside^2 # this should be near 1.0
-dot(Tfourier{Px,Tx}(t), Tfourier{Px,Tx}(t))/nside^2 # this should be near nside^2
+dot(Tfourier{Px,Tx}(t), Tfourier{Px,Tx}(t))/nside^2 # this should be near 1
 
 
 ##### Testing DiagOp
@@ -286,7 +286,8 @@ p = convert(TQUmap{P,T}, p2)
 wn1, wn2, wn3 = white_noise(g), white_noise(g), white_noise(g)
 p = TQUmap{P,T}(wn1, wn2, wn3)
 dot(p, p) / 3 / nside^2 # this should be near 1.0
-dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near nside^2
+dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near 1
+
 
 
 
