@@ -17,6 +17,7 @@ struct TQUmap{P<:Flat,T<:Real} <: Field{P,T,S02}
     qx::Matrix{T}
     ux::Matrix{T}
     TQUmap{P,T}(tx::Matrix, qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(tx, qx, ux)
+    TQUmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T))
 end
 has_qu(::Type{TQUmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{TQUmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -29,6 +30,7 @@ struct TQUfourier{P<:Flat,T<:Real} <: Field{P,T,S02}
     qk::Matrix{Complex{T}}
     uk::Matrix{Complex{T}}
     TQUfourier{P,T}(tk::Matrix, qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk), complex.(qk), complex.(uk))
+    TQUfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
@@ -40,6 +42,7 @@ struct TEBmap{P<:Pix, T<:Real} <: Field{P,T,S02}
     ex::Matrix{T}
     bx::Matrix{T}
     TEBmap{P,T}(tx::Matrix, ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(tx, ex, bx)
+    TEBmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T))
 end
 has_qu(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -51,6 +54,7 @@ struct TEBfourier{P<:Pix, T<:Real} <: Field{P,T,S02}
     ek::Matrix{Complex{T}}
     bk::Matrix{Complex{T}}
     TEBfourier{P,T}(tk::Matrix, ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk), complex.(ek), complex.(bk))
+    TEBfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}

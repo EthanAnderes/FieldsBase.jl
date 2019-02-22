@@ -1,6 +1,8 @@
 
 using FieldsBase
 using Test
+import LinearAlgebra: I
+
 
 
 ########################################################
@@ -54,6 +56,31 @@ p = convert(QUfourier{Px,Tx}, p1)
 @inferred 2 * p4 - 5.0 * p4
 
 
+##### Testing Uniform scaling
+for pp in [p1, p2, p3, p4]
+  @inferred (2I) * pp
+  @inferred pp * (2I) 
+  for (d1, d2, d3) in zip(data((2I) * pp), data(pp * (2I)), data(2pp))
+    @test all(d1 .== d2 .== d3)
+  end
+end 
+
+##### Testing zero constructor 
+@inferred QUmap{Px,Tx}()
+@inferred EBmap{Px,Tx}()
+@inferred QUfourier{Px,Tx}()
+@inferred EBfourier{Px,Tx}()
+
+p1 = QUmap{Px,Tx}()
+p2 = EBmap{Px,Tx}()
+p3 = QUfourier{Px,Tx}()
+p4 = EBfourier{Px,Tx}()
+
+for pp in (p1, p2, p3, p4)
+  for ff in data(pp)
+    @test all(ff .== 0)
+  end
+end
 
 ##### Testing dot
 r1, r2, r3, r4 = randn(Tx,nside, nside), randn(Tx,nside, nside), randn(Tx,nside, nside), randn(Tx,nside, nside)
@@ -175,6 +202,31 @@ t = convert(Tfourier{Px,Tx}, t1)
 @inferred 2 * t2 - 5.0 * t1
 @inferred 2 * t2 - 5.0 * t2
 
+
+##### Testing Uniform scaling
+for pp in [t1, t2]
+  @inferred (2I) * pp
+  @inferred pp * (2I) 
+  for (d1, d2, d3) in zip(data((2I) * pp), data(pp * (2I)), data(2pp))
+    @test all(d1 .== d2 .== d3)
+  end
+end 
+
+##### Testing zero constructor 
+@inferred QUmap{Px,Tx}()
+@inferred EBmap{Px,Tx}()
+
+t1 = QUmap{Px,Tx}()
+t2 = EBmap{Px,Tx}()
+
+for pp in (t1, t2)
+  for ff in data(pp)
+    @test all(ff .== 0)
+  end
+end
+
+
+
 ##### Testing dot
 t1x = rand(Tx, nside, nside)
 t2x = rand(Tx, nside, nside)
@@ -252,10 +304,15 @@ g     =  r𝔽(P,T);
 
 # Test ....
 tx, qx, ux = rand(T, nside, nside), rand(T, nside, nside), rand(T, nside, nside)
+tx, ex, ex = rand(T, nside, nside), rand(T, nside, nside), rand(T, nside, nside)
 tk, ek, bk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
+tk, qk, qk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
 
 p1 = TQUmap{P,T}(tx, qx, ux)
 p2 = TEBfourier{P,T}(tk, ek, bk)
+p3 = TQUfourier{P,T}(tx, qk, uk)
+p4 = TEBmap{P,T}(tx, ex, bx)
+
 
 @time convert(TEBfourier{P,T}, p1)
 @time convert(TEBfourier{P,T}, p2)
@@ -276,6 +333,35 @@ p = convert(TQUmap{P,T}, p2)
 @inferred 2 * p1 - 5.0 * p2
 @inferred 2 * p2 - 5.0 * p1
 @inferred 2 * p1 - 5.0 * p2
+
+
+##### Testing Uniform scaling
+for pp in [p1, p2, p3, p4]
+  @inferred (2I) * pp
+  @inferred pp * (2I) 
+  for (d1, d2, d3) in zip(data((2I) * pp), data(pp * (2I)), data(2pp))
+    @test all(d1 .== d2 .== d3)
+  end
+end 
+
+##### Testing zero constructor 
+@inferred TQUmap{Px,Tx}()
+@inferred TEBmap{Px,Tx}()
+@inferred TQUfourier{Px,Tx}()
+@inferred TEBfourier{Px,Tx}()
+
+tp1 = TQUmap{Px,Tx}()
+tp2 = TEBmap{Px,Tx}()
+tp3 = TQUfourier{Px,Tx}()
+tp4 = TEBfourier{Px,Tx}()
+
+for pp in (tp1, tp2, tp3, tp4)
+  for ff in data(pp)
+    @test all(ff .== 0)
+  end
+end
+
+
 
 
 @test dot(p1, p2) == dot(p2, p1)

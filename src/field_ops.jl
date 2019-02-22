@@ -5,6 +5,7 @@
 
 
 ##### fields with scalars
+
 (+)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ T(n))...)
 (+)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ T(n))...)
 (-)(a::F)            where F<:Field{P,T} where {P<:Pix,T} = F((.- data(a))...)
@@ -13,7 +14,10 @@
 (*)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((T(n) .* data(f))...)
 (*)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((T(n) .* data(f))...)
 
+##### fields with UniformScaling
 
+(*)(f::F, J::UniformScaling) where F<:Field{P,T} where {P<:Pix,T} = J.λ * f
+(*)(J::UniformScaling, f::F) where F<:Field{P,T} where {P<:Pix,T} = J.λ * f
 
 ##### op(fields, fields)
 
@@ -44,21 +48,6 @@ end
 
 # these work better for ArrayFire
 _realdot(a,b) = sum(a.*b)
-
-# function _complexdot(a,b)
-#     n,m = size(a)
-#     @assert size(a)==size(b) && n==m÷2+1
-#     multip_ri = fill(true, n, m)   # both real and imaginary
-#     multip_ri[1,(n+1):m] .= false  # repeats
-#     if iseven(m)
-#         multip_ri[end,(n+1):m] .= false  # repeats
-#     end
-#     ra, ia = real(a), imag(a)
-#     rb, ib = real(b), imag(b)
-#     return 2*dot(ra, multip_ri .* rb) + 2*dot(ia, multip_ri .* ib)
-# end
-
-
 
 function _complexdot(a,b)
     n,m = size(a)

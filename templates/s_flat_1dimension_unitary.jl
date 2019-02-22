@@ -18,6 +18,7 @@ import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 struct Smap{P<:Flat,T<:Real} <: Field{P,T,S0}
     sx::Vector{T}
     Smap{P,T}(sx::Vector) where {P<:Flat,T<:Real} = new{P,T}(sx)
+    Smap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim1(P,T))
 end
 has_qu(::Type{Smap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Smap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -28,6 +29,7 @@ is_lense_basis(::Type{Smap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 struct Sfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
     sk::Vector{Complex{T}}
     Sfourier{P,T}(sk::Vector) where {P<:Flat,T<:Real} = new{P,T}(complex.(sk))
+    Sfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim1(P,T))
 end
 has_qu(::Type{Sfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Sfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}

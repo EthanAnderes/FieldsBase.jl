@@ -17,6 +17,7 @@ import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 struct Fmap{P<:Flat,T<:Real} <: Field{P,T,S0}
     fx::Matrix{T}
     Fmap{P,T}(fx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(fx)
+    Fmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T))
 end
 has_qu(::Type{Fmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Fmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -27,6 +28,7 @@ is_lense_basis(::Type{Fmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 struct Ffourier{P<:Pix,T<:Real} <: Field{P,T,S0}
     fk::Matrix{Complex{T}}
     Ffourier{P,T}(fk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(fk))
+    Ffourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{Ffourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{Ffourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}

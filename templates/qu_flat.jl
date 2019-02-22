@@ -17,6 +17,7 @@ struct QUmap{P<:Flat,T<:Real} <: Field{P,T,S2}
     qx::Matrix{T}
     ux::Matrix{T}
     QUmap{P,T}(qx::Matrix, ux::Matrix) where {P<:Flat,T<:Real} = new{P,T}(qx, ux)
+    QUmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T))
 end
 has_qu(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{QUmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -28,6 +29,7 @@ struct QUfourier{P<:Pix,T<:Real} <: Field{P,T,S2}
     qk::Matrix{Complex{T}}
     uk::Matrix{Complex{T}}
     QUfourier{P,T}(qk::Matrix, uk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(qk), complex.(uk))
+    QUfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{true}
 is_map(::Type{QUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
@@ -38,6 +40,7 @@ struct EBmap{P<:Pix, T<:Real} <: Field{P,T,S2}
     ex::Matrix{T}
     bx::Matrix{T}
     EBmap{P,T}(ex::Matrix, bx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(ex, bx)
+    EBmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T), FieldsBase.zero_map_dim2(P,T))
 end
 has_qu(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}
 is_map(::Type{EBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
@@ -48,6 +51,7 @@ struct EBfourier{P<:Pix, T<:Real} <: Field{P,T,S2}
     ek::Matrix{Complex{T}}
     bk::Matrix{Complex{T}}
     EBfourier{P,T}(ek::Matrix, bk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(ek), complex.(bk))
+    EBfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T), FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{EBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
@@ -75,18 +79,12 @@ end
 
 
 
-
-
-
-
-
 ############################################################
 #  getindex (optional)
 ############################################################
 
 import Base: getindex
 
-# NOTE: these are not type stable
 function getindex(f::S2Field{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
     (sym == :ek)  ? EBfourier{P,T}(f).ek :
     (sym == :bk)  ? EBfourier{P,T}(f).bk :
@@ -98,4 +96,5 @@ function getindex(f::S2Field{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
     (sym == :ux)  ? QUmap{P,T}(f).ux :
     error("index is not defined")
 end
+
 
