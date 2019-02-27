@@ -6,13 +6,13 @@
 
 ##### fields with scalars
 
-(+)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ n)...)
-(+)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .+ n)...)
-(-)(a::F)            where F<:Field{P,T} where {P<:Pix,T} = F((.- data(a))...)
-(-)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((data(f) .- n)...)
-(-)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((n .- data(f))...)
-(*)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((n .* data(f))...)
-(*)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((n .* data(f))...)
+(+)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((ff .+ n for ff in data(f))...)
+(+)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((ff .+ n for ff in data(f))...)
+(-)(f::F)            where F<:Field{P,T} where {P<:Pix,T} = F((.- ff for ff in data(f))...)
+(-)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((ff .- n for ff in data(f))...)
+(-)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((n .- ff for ff in data(f))...)
+(*)(f::F, n::Number) where F<:Field{P,T} where {P<:Pix,T} = F((n .*  ff for ff in data(f))...)
+(*)(n::Number, f::F) where F<:Field{P,T} where {P<:Pix,T} = F((n .*  ff for ff in data(f))...)
 
 ##### fields with UniformScaling
 
