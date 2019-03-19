@@ -25,7 +25,7 @@ abstract type S02 <: Spin end
 abstract type Field{P<:Pix, T<:Real, S<:Spin} end
 
 # exported abstract types
-export Pix, Flat, Healpix, Spin, S0, S2, S02, Field, HarmonicTransform
+export Pix, Flat, Spin, S0, S2, S02, Field, HarmonicTransform
 
 # traits used for convert and promote
 include("convert_promote.jl")
@@ -39,8 +39,8 @@ include("harmonic_transforms/real_1d_flat_fourier.jl")
 include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_1d_flat_ordinary_fourier.jl")
 include("harmonic_transforms/complex_2d_flat_fourier.jl")
-include("harmonic_transforms/spherical_harmonic_transforms.jl")
-export r𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1, rℍ
+# include("harmonic_transforms/spherical_harmonic_transforms.jl")
+export r𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1
 
 # field operations
 include("field_ops.jl")
