@@ -14,7 +14,7 @@ const module_dir  = joinpath(@__DIR__, "..") |> normpath
 # abstract grid geometry and the corresponding harmonic transforms
 abstract type Pix end
 abstract type Flat{Θpix,nside} <: Pix end
-abstract type Healpix{nside}   <: Pix end
+# abstract type Healpix{nside}   <: Pix end
 abstract type HarmonicTransform{P<:Pix, T<:Real} end
 
 # abstract field types
