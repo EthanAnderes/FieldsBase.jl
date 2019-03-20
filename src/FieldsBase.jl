@@ -6,15 +6,11 @@ import LinearAlgebra: dot
 import Base: +, -, *, ^, \, getindex, promote_rule, convert, show, inv
 export dot
 
-# FFTW.set_num_threads(Base.Threads.nthreads())
-# LinearAlgebra.BLAS.set_num_threads(Base.Threads.nthreads())
-
 const module_dir  = joinpath(@__DIR__, "..") |> normpath
 
 # abstract grid geometry and the corresponding harmonic transforms
 abstract type Pix end
 abstract type Flat{Θpix,nside} <: Pix end
-# abstract type Healpix{nside}   <: Pix end
 abstract type HarmonicTransform{P<:Pix, T<:Real} end
 
 # abstract field types
@@ -39,8 +35,7 @@ include("harmonic_transforms/real_1d_flat_fourier.jl")
 include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_1d_flat_ordinary_fourier.jl")
 include("harmonic_transforms/complex_2d_flat_fourier.jl")
-# include("harmonic_transforms/spherical_harmonic_transforms.jl")
-export r𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1
+export r𝔽, 𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1
 
 # field operations
 include("field_ops.jl")

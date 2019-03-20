@@ -39,7 +39,19 @@ end
     𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk), FFT)
 end
 
-𝔽(::Type{P}) where P<:Flat  = 𝔽(P,Float64)
+
+# default T == Float64
+𝔽(::Type{P}) where P<:Flat = 𝔽(P, Float64)
+
+# forward transform for scalar fields
+function *(g::𝔽{P,T}, tx::Matrix)::Matrix{Complex{T}} where {T<:Real, P<:Flat}
+    g.FFT * tx
+end
+
+# inverse transform for scalar fields
+function \(g::𝔽{P,T}, tk::Matrix{Complex{T}})::Matrix{Complex{T}} where {T<:Real, P<:Flat}
+    g.FFT \ tk
+end
 
 (*)(::Type{𝔽{P,T}}, x) where P<:Pix where T = 𝔽(P,T).FFT * x
 (\)(::Type{𝔽{P,T}}, x) where P<:Pix where T = 𝔽(P,T).FFT \ x
@@ -49,3 +61,15 @@ end
 
 (*)(g::𝔽{P,T}, x) where P<:Pix where T = g.FFT * x
 (\)(g::𝔽{P,T}, x) where P<:Pix where T = g.FFT \ x
+
+
+
+
+# allow the types to operate
+(*)(::Type{𝔽{P,T}}, x) where P<:Flat where T = 𝔽(P,T) * x
+(\)(::Type{𝔽{P,T}}, x) where P<:Flat where T = 𝔽(P,T) \ x
+(*)(::Type{𝔽{P}}, x)   where P<:Flat = 𝔽(P) * x
+(\)(::Type{𝔽{P}}, x)   where P<:Flat = 𝔽(P) \ x
+
+
+

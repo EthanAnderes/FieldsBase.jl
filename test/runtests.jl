@@ -13,13 +13,16 @@ include(joinpath(FieldsBase.module_dir, "templates/qu_flat.jl"))
 nside  = 512
 Θpix   = 2.0
 Px     = Flat{Θpix,nside}
-Tx     = Float32
+Tx     = Float64
 g      =  r𝔽(Px,Tx)
 
 qx, ux = rand(Tx, nside, nside), rand(Tx, nside, nside)
 ex, bx = rand(Tx, nside, nside), rand(Tx, nside, nside)
 qk, uk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
 ek, bk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nside)
+
+ek, bk = g * (qx, ux)
+qx, ux = g \ (ek, bk)
 
 p1 = QUmap{Px,Tx}(qx, ux)
 p2 = EBmap{Px,Tx}(ex, bx)
@@ -304,9 +307,9 @@ g     =  r𝔽(P,T);
 
 # Test ....
 tx, qx, ux = rand(T, nside, nside), rand(T, nside, nside), rand(T, nside, nside)
-tx, ex, ex = rand(T, nside, nside), rand(T, nside, nside), rand(T, nside, nside)
+tx, ex, bx = rand(T, nside, nside), rand(T, nside, nside), rand(T, nside, nside)
 tk, ek, bk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
-tk, qk, qk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
+tk, qk, uk = rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside), rand(Complex{T}, nside÷2+1, nside)
 
 p1 = TQUmap{P,T}(tx, qx, ux)
 p2 = TEBfourier{P,T}(tk, ek, bk)
@@ -345,15 +348,15 @@ for pp in [p1, p2, p3, p4]
 end 
 
 ##### Testing zero constructor 
-@inferred TQUmap{Px,Tx}()
-@inferred TEBmap{Px,Tx}()
-@inferred TQUfourier{Px,Tx}()
-@inferred TEBfourier{Px,Tx}()
+@inferred TQUmap{P,T}()
+@inferred TEBmap{P,T}()
+@inferred TQUfourier{P,T}()
+@inferred TEBfourier{P,T}()
 
-tp1 = TQUmap{Px,Tx}()
-tp2 = TEBmap{Px,Tx}()
-tp3 = TQUfourier{Px,Tx}()
-tp4 = TEBfourier{Px,Tx}()
+tp1 = TQUmap{P,T}()
+tp2 = TEBmap{P,T}()
+tp3 = TQUfourier{P,T}()
+tp4 = TEBfourier{P,T}()
 
 for pp in (tp1, tp2, tp3, tp4)
   for ff in data(pp)
@@ -396,6 +399,8 @@ ek, bk = rand(Complex{Tx}, nside÷2+1, nside), rand(Complex{Tx}, nside÷2+1, nsi
 
 p1 = QUmap{Px,Tx}(qx, ux)
 p2 = QUfourier{Px,Tx}(qk, uk)
+
+@benchmark convert($(EBfourier{Px,Tx}), $p1)
 
 
 # =============

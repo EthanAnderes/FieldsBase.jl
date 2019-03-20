@@ -3,41 +3,10 @@
 
 ################################################
 # harmonic_transform needs to be set by the user
+# for higher order fields harmonic_transform * tuple -> tuple
 ##############################################
 
 harmonic_transform(::Type{Any}) = error("define harmonic_transform")
-
-
-
-################################################
-# defult S2 conversion ...
-##############################################
-
-# for Flat pixels
-
-function harmonic_eb_to_qu(ek, bk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-    qk = similar(ek)
-    uk = similar(bk)
-    @inbounds @simd for I in eachindex(ek)
-        qk[I] =   ek[I] * g.cos2ϕk[I] + bk[I] * g.sin2ϕk[I]
-        uk[I] = - ek[I] * g.sin2ϕk[I] + bk[I] * g.cos2ϕk[I]
-    end
-    return qk, uk
-end
-function harmonic_qu_to_eb(qk, uk, g::HarmonicTransform{P,T}) where {P<:Flat, T<:Real}
-    ek = similar(qk)
-    bk = similar(qk)
-    @inbounds @simd for I in eachindex(qk)
-        ek[I] =  qk[I] * g.cos2ϕk[I] - uk[I] * g.sin2ϕk[I]
-        bk[I] =  qk[I] * g.sin2ϕk[I] + uk[I] * g.cos2ϕk[I]
-    end
-    return ek, bk
-end
-
-
-# TODO define this for Healpix
-# ...
-
 
 
 
@@ -65,7 +34,6 @@ is_lense_basis(::Type{X}) where X = error("no definition of is_lense_basis") # -
 ## Convert and Promote using Traits
 #############################################
 
-# convert(::Type{X}, f::X) where X<:Field = X((d for d in data(f))...)
 convert(::Type{X}, f::X) where X<:Field = f::X
 convert(::Type{X}, f::Y) where {X<:Field, Y<:Field} = _convert(X, has_qu(X), is_map(X), f, has_qu(Y), is_map(Y))::X
 
@@ -80,34 +48,41 @@ function _convert(::Type{X}, ::Type{T}, ::Type{IsMap{true}},  f::Y, ::Type{T}, :
 end
 
 
+
 ############### convert(QUx, f::EBy) for x,y ∈ {fourier, map}
 
 #convert(QUfourier,  f::EBfourier)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
-    ek, bk = data(f)
-    X(harmonic_eb_to_qu(ek, bk, FT)...)
+    qx, ux = FT \ data(f)
+    qk     = FT * qx 
+    uk     = FT * ux 
+    X(qk, uk)
 end
 
 # convert(QUfourier,  f::EBmap)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     ex, bx = data(f)
-    X(harmonic_eb_to_qu(FT * ex, FT * bx, FT)...)
+    ek     = FT * ex 
+    bk     = FT * bx
+    qx, ux = FT \ (ek, bk)
+    X(FT * qx, FT * ux)
 end
+
 #convert(QUmap,  f::EBfourier)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
-    ek, bk = data(f)
-    qk, uk = harmonic_eb_to_qu(ek, bk, FT)
-    X(FT \ qk, FT \ uk)
+    qx, ux = FT \ data(f)
+    X(qx, ux)
 end
+
 # convert(QUmap,  f::EBmap)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     ex, bx = data(f)
-    qk, uk = harmonic_eb_to_qu(FT * ex, FT * bx, FT)
-    X(FT \ qk, FT \ uk)
+    qx, ux = FT \ (FT * ex, FT * bx)
+    X(qx, ux)
 end
 
 ################# convert(EBx, f::QUy) for x,y ∈ {fourier, map}
@@ -116,26 +91,31 @@ end
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{false}},  f::Y, ::Type{HasQU{true}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     qk, uk = data(f)
-    X(harmonic_qu_to_eb(qk, uk, FT)...)
+    qx = FT \ qk 
+    ux = FT \ uk
+    ek, bk = FT * (qx, ux)
+    X(ek, bk)
 end
+
 # convert(EBfourier, f::QUmap)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{true}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
-    qx, ux = data(f)
-    X(harmonic_qu_to_eb(FT * qx, FT * ux, FT)...)
+    ek, bk = FT * data(f)
+    X(ek, bk)
 end
+
 #convert(EBmap, f::QUfourier)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{true}},  f::Y, ::Type{HasQU{true}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     qk, uk = data(f)
-    ek, bk = harmonic_qu_to_eb(qk, uk, FT)
+    ek, bk = FT * (FT \ qk, FT \ uk)
     X(FT \ ek, FT \ bk)
 end
+
 # convert(EBmap, f::QUmap)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{true}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S2},Y<:Field{P,T,S2}} where {P<:Pix,T}
     FT = harmonic_transform(X)
-    qx, ux = data(f)
-    ek, bk = harmonic_qu_to_eb(FT * qx, FT * ux, FT)
+    ek, bk = FT * data(f)
     X(FT \ ek, FT \ bk)
 end
 
@@ -145,27 +125,34 @@ end
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tk, ek, bk = data(f)
-    X(tk, harmonic_eb_to_qu(ek, bk, FT)...)
+    qx, ux = FT \ (ek, bk)
+    X(tk, FT * qx, FT * ux)
 end
+
 # convert(IQUfourier,  f::IEBmap)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tx, ex, bx = data(f)
-    X(FT * tx, harmonic_eb_to_qu(FT * ex, FT * bx, FT)...)
+    tk, ek, bk = FT * tx, FT * ex, FT * bx
+    qx, ux = FT \ (ek, bk)
+    X(tk, FT * qx, FT * ux)
 end
+
 #convert(IQUmap,  f::IEBfourier)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tk, ek, bk = data(f)
-    qk, uk = harmonic_eb_to_qu(ek, bk, FT)
-    X(FT \ tk, FT \ qk, FT \ uk)
+    qx, ux = FT \ (ek, bk)
+    X(FT \ tk, qx, ux)
 end
+
 # convert(IQUmap,  f::IEBmap)
 function _convert(::Type{X}, ::Type{HasQU{true}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{false}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tx, ex, bx = data(f)
-    qk, uk = harmonic_eb_to_qu(FT \ ex, FT \ bx, FT)
-    X(tx, FT \ qk, FT \ uk)
+    ek, bk     = FT * ex, FT * bx
+    qx, ux     = FT \ (ek, bk)
+    X(tx, qx, ux)
 end
 
 ################# convert(IEBx, f::IQUy) for x,y ∈ {fourier, map}
@@ -174,26 +161,33 @@ end
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{false}},  f::Y, ::Type{HasQU{true}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tk, qk, uk = data(f)
-    X(tk, harmonic_qu_to_eb(qk, uk, FT)...)
+    qx, ux = FT \ qk, FT \ uk
+    ek, bk = FT * (qx, ux)
+    X(tk, ek, bk)
 end
+
 # convert(IEBfourier, f::IQUmap)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{false}}, f::Y, ::Type{HasQU{true}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tx, qx, ux = data(f)
-    X(FT * tx, harmonic_qu_to_eb(FT * qx, FT * ux, FT)...)
+    ek, bk = FT * (qx, ux)
+    X(FT * tx, ek, bk)
 end
+
 #convert(IEBmap, f::IQUfourier)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{true}},  f::Y, ::Type{HasQU{true}}, ::Type{IsMap{false}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tk, qk, uk = data(f)
-    ek, bk = harmonic_qu_to_eb(qk, uk, FT)
-    X(FT \ tk, FT \ ek, FT \ bk)
+    tx, qx, ux = FT \ tk, FT \ qk, FT \ uk 
+    ek, bk     = FT * (qx, ux)
+    X(tx, FT \ ek, FT \ bk)
 end
+
 # convert(IEBmap, f::IQUmap)
 function _convert(::Type{X}, ::Type{HasQU{false}}, ::Type{IsMap{true}}, f::Y, ::Type{HasQU{true}}, ::Type{IsMap{true}}) where {X<:Field{P,T,S02},Y<:Field{P,T,S02}} where {P<:Pix,T}
     FT = harmonic_transform(X)
     tx, qx, ux = data(f)
-    ek, bk = harmonic_qu_to_eb(FT * qx, FT * ux, FT)
+    ek, bk     = FT * (qx, ux)
     X(tx, FT \ ek, FT \ bk)
 end
 

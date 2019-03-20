@@ -36,17 +36,55 @@ end
     r𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin.(2 .* ϕk), cos.(2 .* ϕk), FFT)
 end
 
+# default T == Float64
+r𝔽(::Type{P}) where P<:Flat = r𝔽(P, Float64)
 
-r𝔽(::Type{P}) where P<:Flat = r𝔽(P,Float64)
 
-(*)(::Type{r𝔽{P,T}}, x) where P<:Pix where T = r𝔽(P,T).FFT * x
-(\)(::Type{r𝔽{P,T}}, x) where P<:Pix where T = r𝔽(P,T).FFT \ x
+# forward transform for scalar fields
+function *(g::r𝔽{P,T}, tx::Matrix)::Matrix{Complex{T}} where {T<:Real, P<:Flat}
+    g.FFT * tx
+end
 
-(*)(::Type{r𝔽{P}}, x)   where P<:Pix = r𝔽(P,Float64).FFT * x
-(\)(::Type{r𝔽{P}}, x)   where P<:Pix = r𝔽(P,Float64).FFT \ x
+# forward transform for S2 fields
+function *(g::r𝔽{P,T}, qux::Tuple{Matrix{T},Matrix{T}})::Tuple{Matrix{Complex{T}},Matrix{Complex{T}}} where {T<:Real, P<:Flat}
+    qx, ux = qux
+    qk, uk = g * qx, g * ux
+    ek = similar(qk)
+    bk = similar(qk)
+    @inbounds @simd for I in eachindex(qk)
+        ek[I] =  qk[I] * g.cos2ϕk[I] - uk[I] * g.sin2ϕk[I]
+        bk[I] =  qk[I] * g.sin2ϕk[I] + uk[I] * g.cos2ϕk[I]
+    end
+    return (ek, bk)
+end
 
-(*)(g::r𝔽{P,T}, x) where P<:Pix where T = g.FFT * x
-(\)(g::r𝔽{P,T}, x) where P<:Pix where T = g.FFT \ x
+
+# inverse transform for scalar fields
+function \(g::r𝔽{P,T}, tk::Matrix)::Matrix{T} where {T<:Real, P<:Flat}
+    g.FFT \ tk
+end
+
+# inverse transform for S2 fields
+function \(g::r𝔽{P,T}, ebk::Tuple{Matrix{Complex{T}},Matrix{Complex{T}}})::Tuple{Matrix{T},Matrix{T}} where {T<:Real, P<:Flat}
+    ek, bk = ebk
+    qk = similar(ek)
+    uk = similar(bk)
+    @inbounds @simd for I in eachindex(ek)
+        qk[I] =   ek[I] * g.cos2ϕk[I] + bk[I] * g.sin2ϕk[I]
+        uk[I] = - ek[I] * g.sin2ϕk[I] + bk[I] * g.cos2ϕk[I]
+    end
+    qx, ux = g \ qk, g \ uk
+    return (qx, ux)
+end 
+
+
+# allow the types to operate
+(*)(::Type{r𝔽{P,T}}, x) where P<:Flat where T = r𝔽(P,T) * x
+(\)(::Type{r𝔽{P,T}}, x) where P<:Flat where T = r𝔽(P,T) \ x
+(*)(::Type{r𝔽{P}}, x)   where P<:Flat = r𝔽(P) * x
+(\)(::Type{r𝔽{P}}, x)   where P<:Flat = r𝔽(P) \ x
+
+
 
 
 
