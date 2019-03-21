@@ -25,7 +25,7 @@ is_lense_basis(::Type{Fmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Ffourier
-struct Ffourier{P<:Pix,T<:Real} <: Field{P,T,S0}
+struct Ffourier{P<:Flat,T<:Real} <: Field{P,T,S0}
     fk::Matrix{Complex{T}}
     Ffourier{P,T}(fk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(fk))
     Ffourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T))

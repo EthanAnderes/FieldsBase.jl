@@ -23,7 +23,7 @@ is_lense_basis(::Type{Tmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Tfourier
-struct Tfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
+struct Tfourier{P<:Flat,T<:Real} <: Field{P,T,S0}
     tk::Vector{Complex{T}}
     Tfourier{P,T}(tk::Vector) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk))
     Tfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim1(P,T))

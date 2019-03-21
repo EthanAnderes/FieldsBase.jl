@@ -9,6 +9,7 @@
 ############################################################
 
 using FieldsBase
+using FieldsBase: r𝔽
 import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 
 # TQUmap
@@ -37,7 +38,7 @@ is_map(::Type{TQUfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
 # TEBmap
-struct TEBmap{P<:Pix, T<:Real} <: Field{P,T,S02}
+struct TEBmap{P<:Flat, T<:Real} <: Field{P,T,S02}
     tx::Matrix{T}
     ex::Matrix{T}
     bx::Matrix{T}
@@ -49,7 +50,7 @@ is_map(::Type{TEBmap{P,T}}) where {P<:Flat,T<:Real} = IsMap{true}
 
 
 # TEBfourier
-struct TEBfourier{P<:Pix, T<:Real} <: Field{P,T,S02}
+struct TEBfourier{P<:Flat, T<:Real} <: Field{P,T,S02}
     tk::Matrix{Complex{T}}
     ek::Matrix{Complex{T}}
     bk::Matrix{Complex{T}}
@@ -60,14 +61,14 @@ has_qu(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real}  = HasQU{false}
 is_map(::Type{TEBfourier{P,T}}) where {P<:Flat,T<:Real} = IsMap{false}
 
 
-const S02Field{P,T} = Union{TEBfourier{P,T}, TEBmap{P,T}, TQUmap{P,T}, TQUfourier{P,T}}
+# const S02Field{P,T} = Union{TEBfourier{P,T}, TEBmap{P,T}, TQUmap{P,T}, TQUfourier{P,T}}
 
 
 # This is needed for 0.7 since constructors do not fall back on convert
-TQUmap{P,T}(tp::S02Field{P,T})     where {P<:Flat,T<:Real} = convert(TQUmap{P,T}, tp) 
-TQUfourier{P,T}(tp::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TQUfourier{P,T}, tp) 
-TEBmap{P,T}(tp::S02Field{P,T})     where {P<:Flat,T<:Real} = convert(TEBmap{P,T}, tp) 
-TEBfourier{P,T}(tp::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TEBfourier{P,T}, tp) 
+TQUmap{P,T}(tp::Field{P,T,S02})     where {P<:Flat,T<:Real} = convert(TQUmap{P,T}, tp) 
+TQUfourier{P,T}(tp::Field{P,T,S02}) where {P<:Flat,T<:Real} = convert(TQUfourier{P,T}, tp) 
+TEBmap{P,T}(tp::Field{P,T,S02})     where {P<:Flat,T<:Real} = convert(TEBmap{P,T}, tp) 
+TEBfourier{P,T}(tp::Field{P,T,S02}) where {P<:Flat,T<:Real} = convert(TEBfourier{P,T}, tp) 
 
 
 
@@ -76,7 +77,7 @@ TEBfourier{P,T}(tp::S02Field{P,T}) where {P<:Flat,T<:Real} = convert(TEBfourier{
 #  Specify the harmonic transform
 ############################################################
 
-function harmonic_transform(::Type{F}) where F<:S02Field{P,T} where {P<:Flat, T<:Real}
+function harmonic_transform(::Type{F}) where F<:Field{P,T,S02} where {P<:Flat, T<:Real}
     return r𝔽(P,T)
 end
 
@@ -92,7 +93,7 @@ end
 import Base: getindex
 
 # NOTE: these are not type stable
-function getindex(f::S02Field{P,T}, sym::Symbol) where {P<:Flat, T<:Real}
+function getindex(f::Field{P,T,S02}, sym::Symbol) where {P<:Flat, T<:Real}
     (sym == :ek)  ? TEBfourier{P,T}(f).ek :
     (sym == :bk)  ? TEBfourier{P,T}(f).bk :
     (sym == :tk)  ? TEBfourier{P,T}(f).tk :

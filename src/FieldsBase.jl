@@ -35,14 +35,14 @@ include("harmonic_transforms/real_1d_flat_fourier.jl")
 include("harmonic_transforms/real_1d_flat_unitary_fourier.jl")
 include("harmonic_transforms/real_1d_flat_ordinary_fourier.jl")
 include("harmonic_transforms/complex_2d_flat_fourier.jl")
-export r𝔽, 𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1
+# export r𝔽, 𝔽, r𝕌𝔽2, r𝕆𝔽2, r𝔽1, r𝕌𝔽1, r𝕆𝔽1
 
 # field operations
 include("field_ops.jl")
 
 # linear ops
 include("linear_ops.jl")
-export LinOp, DiagOp, 𝕃
+export LinOp, DiagOp # , 𝕃 # TODO get rid of 𝕃, in favor of DiagOp
 
 # misc
 include("util.jl")

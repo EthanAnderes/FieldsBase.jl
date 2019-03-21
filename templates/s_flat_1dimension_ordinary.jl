@@ -26,7 +26,7 @@ is_lense_basis(::Type{Smap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 
 
 # Sfourier
-struct Sfourier{P<:Pix,T<:Real} <: Field{P,T,S0}
+struct Sfourier{P<:Flat,T<:Real} <: Field{P,T,S0}
     sk::Vector{Complex{T}}
     Sfourier{P,T}(sk::Vector) where {P<:Flat,T<:Real} = new{P,T}(complex.(sk))
     Sfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim1(P,T))
