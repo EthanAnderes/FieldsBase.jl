@@ -16,7 +16,8 @@ import FieldsBase: has_qu, is_map, is_lense_basis, harmonic_transform
 # Tmap
 struct Tmap{P<:Flat,T<:Real} <: Field{P,T,S0}
     tx::Matrix{T}
-    Tmap{P,T}(tx::Matrix) where {P<:Flat,T<:Real} = new{P,T}(tx)
+    Tmap{P,T}(tx) where {P<:Flat,T<:Real} = new{P,T}(T.(tx))
+    Tmap{P,T}(tx::Matrix{T}) where {P<:Flat,T<:Real} = new{P,T}(tx)
     Tmap{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_map_dim2(P,T))
 
 end
@@ -28,7 +29,8 @@ is_lense_basis(::Type{Tmap{P,T}}) where {P<:Flat,T<:Real} = IsLenseBasis{true}
 # Tfourier
 struct Tfourier{P<:Flat,T<:Real} <: Field{P,T,S0}
     tk::Matrix{Complex{T}}
-    Tfourier{P,T}(tk::Matrix) where {P<:Flat,T<:Real} = new{P,T}(complex.(tk))
+    Tfourier{P,T}(tk) where {P<:Flat,T<:Real} = new{P,T}(Complex{T}.(tk))
+    Tfourier{P,T}(tk::Matrix{CT}) where {P<:Flat,T<:Real,CT<:Complex{T}} = new{P,T}(tk)
     Tfourier{P,T}() where {P<:Flat,T<:Real} = new{P,T}(FieldsBase.zero_fourier_dim2(P,T))
 end
 has_qu(::Type{Tfourier{P,T}}) where {P<:Flat,T<:Real} = HasQU{false}

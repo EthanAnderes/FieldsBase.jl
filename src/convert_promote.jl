@@ -40,11 +40,13 @@ convert(::Type{X}, f::Y) where {X<:Field, Y<:Field} = _convert(X, has_qu(X), is_
 # convert(Xfourier,  f::Xmap)  for X ∈ {T, QU, EB, TQU, TEB}
 function _convert(::Type{X}, ::Type{T}, ::Type{IsMap{false}}, f::Y, ::Type{T}, ::Type{IsMap{true}}) where {T<:HasQU, X<:Field{P},Y<:Field{P}} where P<:Pix
     X((harmonic_transform(X) * d for d in data(f))...)
+    #X(map(d->harmonic_transform(X) * d, data(f))...) # testing
 end
 
 # convert(Xmap,  f::Xfourier)  for X ∈ {T, QU, EB, TQU, TEB}
 function _convert(::Type{X}, ::Type{T}, ::Type{IsMap{true}},  f::Y, ::Type{T}, ::Type{IsMap{false}}) where {T<:HasQU, X<:Field{P},Y<:Field{P}} where P<:Pix
     X((harmonic_transform(X) \ d for d in data(f))...)
+    #X(map(d->harmonic_transform(X) \ d,data(f))...) # testing
 end
 
 

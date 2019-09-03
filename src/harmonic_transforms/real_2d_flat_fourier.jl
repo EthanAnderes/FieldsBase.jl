@@ -19,6 +19,7 @@ struct r𝔽{P<:Flat,T<:Real,F} <: HarmonicTransform{P,T}
 end
 
 
+
 # real FFT generated function constructor
 @generated function r𝔽(::Type{P},::Type{T}) where T<:Real where P<:Flat{Θpix, nside}  where {Θpix, nside}
     Δx     = deg2rad(Θpix/60)
@@ -32,15 +33,15 @@ end
     k      = [reshape(k_side, 1, nside), reshape(k_side[1:nside÷2+1], nside÷2+1, 1)]
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
     ϕk     = atan.(k[2],k[1])
-    FFT    =  Ωx / (2π) * plan_rfft(Array{T}(undef,nside,nside); flags=FFTW.ESTIMATE)
+    FFT    =  T(Ωx / (2π)) * plan_rfft(Matrix{T}(undef,nside,nside); flags=FFTW.ESTIMATE)
     #--- force the real hermitian symmitry for sin2ϕk ()
-    sin2ϕk = sin.(2 .* ϕk)
+    sin2ϕk, cos2ϕk = sin.(2 .* ϕk), cos.(2 .* ϕk)
     if iseven(nside)
         sin2ϕk[1, end:-1:(nside÷2+2)] .= sin2ϕk[1, 2:nside÷2]
         sin2ϕk[end, end:-1:(nside÷2+2)] .= sin2ϕk[end, 2:nside÷2]
     end
     # ---------
-    r𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin2ϕk, cos.(2 .* ϕk), FFT)
+    r𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin2ϕk, cos2ϕk, FFT)
 end
 
 # default T == Float64
