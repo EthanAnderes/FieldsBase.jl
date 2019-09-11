@@ -60,8 +60,8 @@ function *(g::r𝔽{P,T}, qux::Tuple{Matrix{T},Matrix{T}})::Tuple{Matrix{Complex
     ek = similar(qk)
     bk = similar(qk)
     @inbounds @simd for I in eachindex(qk)
-        ek[I] =  qk[I] * g.cos2ϕk[I] - uk[I] * g.sin2ϕk[I]
-        bk[I] =  qk[I] * g.sin2ϕk[I] + uk[I] * g.cos2ϕk[I]
+        ek[I] =   qk[I] * g.cos2ϕk[I] + uk[I] * g.sin2ϕk[I]
+        bk[I] = - qk[I] * g.sin2ϕk[I] + uk[I] * g.cos2ϕk[I]
     end
     return (ek, bk)
 end
@@ -78,8 +78,8 @@ function \(g::r𝔽{P,T}, ebk::Tuple{Matrix{Complex{T}},Matrix{Complex{T}}})::Tu
     qk = similar(ek)
     uk = similar(bk)
     @inbounds @simd for I in eachindex(ek)
-        qk[I] =   ek[I] * g.cos2ϕk[I] + bk[I] * g.sin2ϕk[I]
-        uk[I] = - ek[I] * g.sin2ϕk[I] + bk[I] * g.cos2ϕk[I]
+        qk[I] =   ek[I] * g.cos2ϕk[I] - bk[I] * g.sin2ϕk[I]
+        uk[I] =   ek[I] * g.sin2ϕk[I] + bk[I] * g.cos2ϕk[I]
     end
     qx, ux = g \ qk, g \ uk
     return (qx, ux)
