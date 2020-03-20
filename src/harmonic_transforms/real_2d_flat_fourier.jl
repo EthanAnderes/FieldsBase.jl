@@ -33,7 +33,7 @@ end
     k      = [reshape(k_side, 1, nside), reshape(k_side[1:nside÷2+1], nside÷2+1, 1)]
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
     ϕk     = atan.(k[2],k[1])
-    FFT    =  T(Ωx / (2π)) * plan_rfft(Matrix{T}(undef,nside,nside); flags=FFTW.ESTIMATE)
+    FFT    =  T(Ωx / (2π)) * plan_rfft(Matrix{T}(undef,nside,nside); flags=FFTW.PATIENT, timelimit=45)
     #--- force the real hermitian symmitry for sin2ϕk ()
     sin2ϕk, cos2ϕk = sin.(2 .* ϕk), cos.(2 .* ϕk)
     if iseven(nside)
