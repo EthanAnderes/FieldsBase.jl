@@ -35,15 +35,24 @@ end
     k      = [reshape(k_side, 1, nside), reshape(k_side, nside, 1)]
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
     ϕk     = atan.(k[2],k[1])
-    FFT    =  Ωx / (2π) * plan_fft(Array{Complex{T}}(undef, nside,nside); flags=FFTW.PATIENT, timelimit=45)
     #--- force the real hermitian symmitry for sin2ϕk ()
-    sin2ϕk = sin.(2 .* ϕk)
+    sin2ϕk, cos2ϕk = sin.(2 .* ϕk), cos.(2 .* ϕk)
     if iseven(nside)
         sin2ϕk[1, end:-1:(nside÷2+2)] .= sin2ϕk[1, 2:nside÷2]
         sin2ϕk[nside÷2+1, end:-1:(nside÷2+2)] .= sin2ϕk[nside÷2+1, 2:nside÷2] # needs testing
     end
+
     # ---------
-    𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin2ϕk, cos.(2 .* ϕk), FFT)
+    # 𝔽{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, sin2ϕk, cos.(2 .* ϕk), FFT)
+
+    X   = zeros(Complex{T},nside,nside) 
+    mlt = T(Ωx / (2π))    
+    code_out = quote 
+        FFT =  $mlt * plan_fft($X; flags=FFTW.MEASURE, timelimit=30)
+        𝔽{$P,$T, typeof(FFT)}($Δx, $Δk, $Ωk, $Ωx, $period, $nyq, $k, $x, $sin2ϕk, $cos2ϕk, FFT)
+    end
+    return code_out
+
 end
 
 

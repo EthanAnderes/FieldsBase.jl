@@ -31,9 +31,17 @@ end
     x_side = ifftshift(-nside÷2:(nside-1)÷2) * Δx
     k      = [reshape(k_side, 1, nside), reshape(k_side[1:nside÷2+1], nside÷2+1, 1)]
     x      = [reshape(x_side, 1, nside), reshape(x_side, nside, 1)]
-    FFT    = (1/nside^dm) * plan_rfft(Array{T}(undef, nside,nside); flags=FFTW.PATIENT, timelimit=45)
-    r𝕆𝔽2{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
+    
+    X   = zeros(T,nside,nside) 
+    mlt = T(1/nside^dm)  
+    code_out = quote 
+        FFT    = $mlt * plan_rfft($X; flags=FFTW.MEASURE, timelimit=30)
+        r𝕆𝔽2{$P,$T,typeof(FFT)}($Δx, $Δk, $Ωk, $Ωx, $period, $nyq, $k, $x, FFT)
+    end
+    return code_out
 end
+
+
 
 r𝕆𝔽2(::Type{P}) where P<:Flat = r𝕆𝔽2(P,Float64)
 

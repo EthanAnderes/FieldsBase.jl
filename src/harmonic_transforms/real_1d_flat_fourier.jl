@@ -29,9 +29,18 @@ end
     k      = k_side[1:nside÷2+1]
     x      = x_side
     dm     = 1 #<-- dimension
-    FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(Array{T}(undef, nside); flags=FFTW.PATIENT, timelimit=45)
-    r𝔽1{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
+    #FFT    =  (Ωx * ((2π) ^ (-dm/2))) * plan_rfft(Array{T}(undef, nside); flags=FFTW.PATIENT, timelimit=45)
+    #r𝔽1{P,T,typeof(FFT)}(Δx, Δk, Ωk, Ωx, period, nyq, k, x, FFT)
+
+    X   = zeros(T,nside) # Array{T}(undef, nside)
+    mlt = T(Ωx * ((2π) ^ (-dm/2)))
+    code_out = quote
+        FFT   =  $mlt * plan_rfft($X; flags=FFTW.MEASURE, timelimit=30)
+        r𝔽1{$P,$T,typeof(FFT)}($Δx, $Δk, $Ωk, $Ωx, $period, $nyq, $k, $x, FFT)
+    end
+    return code_out
 end
+
 
 r𝔽1(::Type{P}) where P<:Flat = r𝔽1(P,Float64)
 

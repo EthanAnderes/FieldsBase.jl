@@ -381,25 +381,25 @@ dot(TEBfourier{P,T}(p), TEBfourier{P,T}(p)) / 3 / nside^2 # this should be near 
 
 
 ##### Testing real symmetry in g.sin2ϕk and g.cos2ϕk
-nside_even  = 256
+nside_even = 256
 nside_odd  = 257
-Θpix   = 2.0
+Θpix       = 2.0
 P_even     = Flat{Θpix,nside_even}
-P_odd     = Flat{Θpix,nside_odd}
-T     = Float64
+P_odd      = Flat{Θpix,nside_odd}
+T          = Float64
 g_even     =  r𝔽(P_even,T);
-g_odd     =  r𝔽(P_odd,T);
-gc_even     =  FieldsBase.𝔽(P_even,T);
+g_odd      =  r𝔽(P_odd,T);
+gc_even    =  FieldsBase.𝔽(P_even,T);
 gc_odd     =  FieldsBase.𝔽(P_odd,T);
 
-@test sum(abs2.(g_even.sin2ϕk .- g_even * (g_even \ g_even.sin2ϕk))) < eps(T)
-@test sum(abs2.(g_even.cos2ϕk .- g_even * (g_even \ g_even.cos2ϕk))) < eps(T)
-@test sum(abs2.(g_odd.sin2ϕk .- g_odd * (g_odd \ g_odd.sin2ϕk))) < eps(T)
-@test sum(abs2.(g_odd.cos2ϕk .- g_odd * (g_odd \ g_odd.cos2ϕk))) < eps(T)
-@test sum(abs2.(gc_even.sin2ϕk .- gc_even * (gc_even \ gc_even.sin2ϕk))) < eps(T)
-@test sum(abs2.(gc_even.cos2ϕk .- gc_even * (gc_even \ gc_even.cos2ϕk))) < eps(T)
-@test sum(abs2.(gc_odd.sin2ϕk .- gc_odd * (gc_odd \ gc_odd.sin2ϕk))) < eps(T)
-@test sum(abs2.(gc_odd.cos2ϕk .- gc_odd * (gc_odd \ gc_odd.cos2ϕk))) < eps(T)
+@test sum(abs2.(g_even.sin2ϕk .- g_even * (g_even \ g_even.sin2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(g_even.cos2ϕk .- g_even * (g_even \ g_even.cos2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(g_odd.sin2ϕk .- g_odd * (g_odd \ g_odd.sin2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(g_odd.cos2ϕk .- g_odd * (g_odd \ g_odd.cos2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(gc_even.sin2ϕk .- gc_even * (gc_even \ gc_even.sin2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(gc_even.cos2ϕk .- gc_even * (gc_even \ gc_even.cos2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(gc_odd.sin2ϕk .- gc_odd * (gc_odd \ gc_odd.sin2ϕk))) ≈ 0.0 atol=1e-10
+@test sum(abs2.(gc_odd.cos2ϕk .- gc_odd * (gc_odd \ gc_odd.cos2ϕk))) ≈ 0.0 atol=1e-10
 
 
 #=
